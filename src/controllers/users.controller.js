@@ -1,4 +1,5 @@
 import UserService from '../services/users.service.js';
+import {config} from '../config/config.js';
 
 class UserController {
   
@@ -90,7 +91,7 @@ class UserController {
 
       const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // Solo se enviará la cookie a través de HTTPS en producción
+        secure: config.NODE_ENV === 'production', // Solo se enviará la cookie a través de HTTPS en producción
         sameSite: 'strict', // Evita que la cookie sea enviada en solicitudes de sitios cruzados
         maxAge: 4 * 60 * 60 * 1000, // La cookie expirará en 1 día
         sameSite: 'lax', // Permite que la cookie sea enviada en solicitudes de sitios cruzados
