@@ -107,3 +107,56 @@ Para mantener el código mantenible y testeable, las peticiones siguen estrictam
 2.  **Validación en Arranque:** El archivo `config.js` verifica de forma síncrona que todas las variables de entorno críticas existan antes de encender el puerto, impidiendo estados zombie de la aplicación.
 3.  **Inmutabilidad de Constantes:** Los roles (`USER`, `ADMIN`, `COURIER`) y los mensajes de error del sistema están blindados con `Object.freeze()` para evitar alteraciones en tiempo de ejecución.
 4.  **Inyección de Contexto:** El middleware de autenticación decodifica el token e inyecta los datos del operador en `req.user`, permitiendo auditorías internas de seguridad en las capas inferiores.
+
+# API ShipNow - Módulo de Mocks y Generación de Datos de Prueba
+
+Este proyecto incluye un módulo de simulación (**Mocks**) utilizando la librería `Faker` y controladores dedicados para facilitar el desarrollo, las pruebas y el poblamiento rápido (**Seeding**) de la base de datos en MongoDB.
+
+---
+
+## 🚀 Características Principales
+
+* **Generación de Usuarios Mock:** Creación de perfiles de usuario simulados con roles dinámicos (incluyendo soporte para repartidores/couriers).
+* **Generación de Productos Mock:** Creación automática de artículos con información comercial variada.
+* **Generación de Órdenes Mock:** Simulación de pedidos vinculados a documentos reales existentes en la base de datos (usuarios y productos).
+* **Inserción Masiva (Seeding):** Endpoint para poblar la base de datos de forma controlada mediante transacciones automáticas.
+* **Validaciones de Seguridad:** Límites estrictos de cantidad (máximo 50 elementos por solicitud) para prevenir sobrecarga en el servidor.
+
+---
+
+## 📂 Estructura del Módulo
+
+* **Controlador (`MockController`):** Ubicado en `src/mocks/controller/mocks.controller.js`. Maneja las peticiones HTTP, validaciones de parámetros de entrada (`query` y `body`) y respuestas JSON estructuradas.
+* **Rutas:** Ubicadas en `src/mocks/routes/mocks.routes.js`.
+* **Servicio (`MockService`):** Ubicado en `src/mocks/services/mock.service.js`. Contiene la lógica de negocio y el uso de Faker para la estructuración de los datos.
+
+---
+
+## 🛠️ Endpoints Disponibles
+
+### 1. Obtener Usuarios Simulados (Sin Guardar)
+* **URL:** `GET /api/mocking/mocking-users`
+* **Query Params Opcionales:** 
+  * `count` (Número de usuarios a generar, por defecto `50`, máximo `50`).
+* **Respuesta:** JSON con la lista de usuarios generados en el `payload`.
+
+### 2. Obtener Productos Simulados (Sin Guardar)
+* **URL:** `GET /api/mocking/mocking-produtcs`
+* **Query Params Opcionales:**
+  * `count` (Número de productos a generar, por defecto `20`).
+
+### 3. Obtener Órdenes Simuladas (Sin Guardar)
+* **URL:** `GET /api/mocks/mocking-orders`
+* **Query Params Opcionales:**
+  * `count` (Número de órdenes a generar, por defecto `10`).
+* **Nota:** Requiere que existan usuarios y productos previos en la base de datos para extraer sus IDs reales.
+
+### 4. Inserción Masiva Controlada (Seed)
+* **URL:** `POST /api/mocks/generate-data`
+* **Body Parameters (JSON):**
+  ```json
+  {
+    "usersCount": 10,
+    "productsCount": 15,
+    "ordersCount": 5
+  }

@@ -7,6 +7,7 @@ import {connectDB} from "./config/db.js";
 import usersRoutes from "./routes/users.routes.js";
 import productsRoutes from "./routes/products.routes.js";
 import ordersRoutes from "./routes/orders.routes.js";
+import mocksRoutes from "./mocks/routes/mocks.routes.js";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use(cookieParser());
 app.use("/api/users", usersRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/orders", ordersRoutes);
+app.use('/api/mocking', mocksRoutes);
 
 //ruta de prueba para verificar que el servidor está corriendo
 app.get('/health', (req, res) => {
