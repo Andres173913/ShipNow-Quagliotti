@@ -37,7 +37,7 @@ El proyecto se organiza en 8 capas fundamentales, donde cada componente cumple c
 
 ### 1. Clonar el repositorio e instalar dependencias
 ```bash
-git clone https://github.com
+git clone https://github.com/Andres173913/ShipNow-Quagliotti
 cd shipnow-api
 npm install
 ```
@@ -135,18 +135,18 @@ Este proyecto incluye un módulo de simulación (**Mocks**) utilizando la librer
 ## 🛠️ Endpoints Disponibles
 
 ### 1. Obtener Usuarios Simulados (Sin Guardar)
-* **URL:** `GET /api/mocking/mocking-users`
+* **URL:** `GET /api/mocking/mocking-users?count=10`
 * **Query Params Opcionales:** 
   * `count` (Número de usuarios a generar, por defecto `50`, máximo `50`).
 * **Respuesta:** JSON con la lista de usuarios generados en el `payload`.
 
 ### 2. Obtener Productos Simulados (Sin Guardar)
-* **URL:** `GET /api/mocking/mocking-produtcs`
+* **URL:** `GET /api/mocking/mocking-produtcs?count=10`
 * **Query Params Opcionales:**
   * `count` (Número de productos a generar, por defecto `20`).
 
 ### 3. Obtener Órdenes Simuladas (Sin Guardar)
-* **URL:** `GET /api/mocks/mocking-orders`
+* **URL:** `GET /api/mocks/mocking-orders?count=5`
 * **Query Params Opcionales:**
   * `count` (Número de órdenes a generar, por defecto `10`).
 * **Nota:** Requiere que existan usuarios y productos previos en la base de datos para extraer sus IDs reales.
@@ -160,3 +160,21 @@ Este proyecto incluye un módulo de simulación (**Mocks**) utilizando la librer
     "productsCount": 15,
     "ordersCount": 5
   }
+
+## ⚠️ Manejo de Errores y Validaciones
+
+El sistema cuenta con una gestión centralizada de excepciones para asegurar respuestas predecibles y claras ante fallos en las solicitudes, validando de forma estricta los tipos de datos en la creación y actualización de recursos (por ejemplo, asegurando tipos correctos para campos clave como `"price"`, `"stock"` o `"category"`).
+
+### Características principales:
+* **Bloques Try/Catch:** Captura asíncrona de errores en controladores y servicios.
+* **Códigos de Estado HTTP:** Uso correcto de códigos estándar (`400` para peticiones mal formadas, `404` para recursos no hallados y `500` para errores imprevistos).
+* **Validación de Tipos y Campos:** Control estricto sobre los payloads entrantes (ej: validando que `price` y `stock` sean numéricos válidos y que `category` pertenezca a los valores permitidos).
+* **Respuestas JSON Estructuradas:** Formato unificado de error que facilita la lectura por parte del cliente.
+
+**Ejemplo de payload de entrada validado:**
+```json
+{
+  "price": "8000",
+  "stock": "10",
+  "category": "ropa"
+}

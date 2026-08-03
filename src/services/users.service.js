@@ -1,102 +1,109 @@
 import UserRepository from '../repositories/users.repository.js';
-import {hashPassword, comparePassword} from '../utils/crypto.utils.js';
-import {generateToken} from '../utils/jwt.utils.js';
-import {ERROR_MESSAGES} from '../constants/errors.js';
+import { hashPassword, comparePassword } from '../utils/crypto.utils.js';
+import { generateToken } from '../utils/jwt.utils.js';
+import { AppError, ERROR_CODES } from '../errors/index.js';
 
 class UserService {
 
-  //traer todos los usuarios
+  // Traer todos los usuarios
   static async getAll() {
     return await UserRepository.find();
   }
 
-  //traer un usuario por id
+  // Traer un usuario por id
   static async getById(id) {
-    return await UserRepository.findById(id);
+    const user = await UserRepository.findById(id);
+    if (!user) {
+      throw new AppError(ERROR_CODES.USER_NOT_FOUND);
+    }
+    return user;
   }
 
-  //traer un usuario por email
+  // Traer un usuario por email
   static async getByEmail(email) {
-    return await UserRepository.findByEmail(email);
+    const user = await UserRepository.findByEmail(email);
+    if (!user) {
+      throw new AppError(ERROR_CODES.USER_NOT_FOUND);
+    }
+    return user;
   }
 
-  // crear un usuario
+  // Crear un usuario
   static async create(userdata) {
-    
-    //verificar si el email ya existe
-    const ExistingUser = await UserRepository.findByEmail(userdata.email);
-    if (ExistingUser) {
-      throw new Error(ERROR_MESSAGES.EMAIL_ALREADY_EXISTS);
+    // Verificar si el email ya existe
+    const existingUser = await UserRepository.findByEmail(userdata.email);
+    if (existingUser) {
+      throw new AppError(ERROR_CODES.VALIDATION_ERROR, 'El email ya se encuentra registrado.');
     }
 
-    //hash password
+    // Hashear contraseña
     const encryptedPassword = await hashPassword(userdata.password);
 
-    const finalData={
+    const finalData = {
       ...userdata,
       password: encryptedPassword 
-    }
+    };
 
     return await UserRepository.create(finalData);
   }
 
-  //actualizar un usuario
+  // Actualizar un usuario
   static async update(id, data) {  
-    
-    //validar que el usuario exista    
+    // Validar que el usuario exista    
     const user = await UserRepository.findById(id);
     if (!user) {
-      throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+      throw new AppError(ERROR_CODES.USER_NOT_FOUND);
     }
-    //si viene un password, hashearlo
+
+    // Si viene un password, hashearlo
     if (data.password) {
       data.password = await hashPassword(data.password);
     }
 
-    //actualizar el usuario
+    // Actualizar el usuario
     return await UserRepository.update(id, data);
   }
 
-  // Query para eliminar un usuario
+  // Eliminar un usuario
   static async delete(id) {
-    //validar que el usuario exista
+    // Validar que el usuario exista
     const user = await UserRepository.findById(id);
     if (!user) {
-      throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+      throw new AppError(ERROR_CODES.USER_NOT_FOUND);
     }
 
-    //eliminar el usuario
+    // Eliminar el usuario
     return await UserRepository.delete(id);
   }
 
-  //login de usuario
+  // Login de usuario
   static async login(email, password) {
-    //validar que el usuario exista se pasa el true para traer la contraseña oculta
+    // Validar que el usuario exista (pasamos true para traer la contraseña oculta)
     const userDoc = await UserRepository.findByEmail(email, true);
     if (!userDoc) {
-      throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
+      throw new AppError(ERROR_CODES.USER_NOT_FOUND, 'Email o contraseña incorrectos.');
     }
 
-    // Convertimos el documento pesado de Mongoose a un objeto plano de JS
+    // Convertimos el documento de Mongoose a objeto plano de JS
     const user = userDoc.toObject();
 
-    //validar que la contraseña sea correcta
+    // Validar contraseña
     const isPasswordValid = await comparePassword(password, user.password);
     if (!isPasswordValid) {
-      throw new Error(ERROR_MESSAGES.INVALID_PASSWORD);
+      throw new AppError(ERROR_CODES.VALIDATION_ERROR, 'Email o contraseña incorrectos.');
     }
 
-    //definimos datos que viajaran en el token, en este caso el id y el email del usuario
-    const tokenpayload = {
+    // Payload para el token JWT
+    const tokenPayload = {
       id: user._id.toString(),
       email: user.email,
       role: user.role
     };
 
-    //generar token
-    const token = generateToken(tokenpayload);
+    // Generar token
+    const token = generateToken(tokenPayload);
 
-    //ocultar la contraseña antes de devolver el usuario
+    // Ocultar contraseña antes de retornar
     delete user.password;
 
     return { user, token };

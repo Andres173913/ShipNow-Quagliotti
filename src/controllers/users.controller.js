@@ -1,45 +1,42 @@
 import UserService from '../services/users.service.js';
-import {config} from '../config/config.js';
+import { config } from '../config/config.js';
 
 class UserController {
   
   // Obtener todos los usuarios
-  static async getAll(req, res) {
+  static async getAll(req, res, next) {
     try {
       const users = await UserService.getAll();
-      res.status(200).json(users);
+      res.status(200).json({ status: "success", payload: users });
     } catch (error) {
-      console.warn('Error getting users');
-      res.status(500).json({ statusCode: 500, message: error.message });
+      next(error); // Delegamos al middleware global
     }
   }
 
   // Obtener un usuario por id
-  static async getById(req, res) {
+  static async getById(req, res, next) {
     try {
       const { id } = req.params;
       const user = await UserService.getById(id);
-      res.status(200).json(user);
+      res.status(200).json({ status: "success", payload: user });
     } catch (error) {
-      console.warn('Error getting user');
-      res.status(404).json({ statusCode: 404, message: error.message });
+      next(error);
     }
   }
 
   // Obtener un usuario por email
-  static async getByEmail(req, res) {
+  static async getByEmail(req, res, next) {
     try {
       const { email } = req.query;
       const user = await UserService.getByEmail(email);
-      res.status(200).json(user);
+      res.status(200).json({ status: "success", payload: user });
     } catch (error) {
-      console.warn('Error getting user');
-      res.status(500).json({ statusCode: 500, message: error.message });
+      next(error);
     }
   }
 
-  // crear un usuario
-  static async create(req, res) {
+  // Crear un usuario
+  static async create(req, res, next) {
     try {
       const { first_name, last_name, email, password, role } = req.body;
       const user = await UserService.create({ 
@@ -50,60 +47,54 @@ class UserController {
         role 
       });
 
-      res.status(201).json(user);
+      res.status(201).json({ status: "success", payload: user });
     } catch (error) {
-      console.warn('Error creating user');
-      res.status(400).json({ statusCode: 400, message: error.message });
+      next(error);
     } 
   }
 
-  // actualizar un usuario
-  static async update(req, res) {
+  // Actualizar un usuario
+  static async update(req, res, next) {
     try {
-      // Obtener el id del usuario a actualizar
       const { id } = req.params;
-      const UpdateUser = await UserService.update(id, req.body);
-      res.status(200).json(UpdateUser);
+      const updatedUser = await UserService.update(id, req.body);
+      res.status(200).json({ status: "success", payload: updatedUser });
     } catch (error) {
-      console.warn('Error updating user');
-      res.status(400).json({ statusCode: 400, message: error.message });
+      next(error);
     }
   }
 
-  // eliminar un usuario
-  static async delete(req, res) {
+  // Eliminar un usuario
+  static async delete(req, res, next) {
     try {
       const { id } = req.params;
       await UserService.delete(id);
-      res.status(200).json({ message: 'User deleted successfully' });
+      res.status(200).json({ status: "success", message: 'User deleted successfully' });
     } catch (error) {
-      console.warn('Error deleting user');
-      res.status(400).json({ statusCode: 400, message: error.message });
+      next(error);
     }
   }
 
-  // login de usuario
-  static async login(req, res) {
+  // Login de usuario
+  static async login(req, res, next) {
     try {
       const { email, password } = req.body;
-      //Destructuramos lo que nos llega del servicio de login, que es un token
-      const {user, token }= await UserService.login(email, password);
+      const { user, token } = await UserService.login(email, password);
 
       const cookieOptions = {
         httpOnly: true,
-        secure: config.NODE_ENV === 'production', // Solo se enviará la cookie a través de HTTPS en producción
-        sameSite: 'strict', // Evita que la cookie sea enviada en solicitudes de sitios cruzados
-        maxAge: 4 * 60 * 60 * 1000, // La cookie expirará en 1 día
-        sameSite: 'lax', // Permite que la cookie sea enviada en solicitudes de sitios cruzados
+        secure: config.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 4 * 60 * 60 * 1000,
       };
 
       res.cookie('access_token', token, cookieOptions);
 
-      res.status(200).json({ user, token });
+      res.status(200).json({ status: "success", user, token });
     } catch (error) {
-      console.warn('Error logging in user');
-      res.status(401).json({ statusCode: 401, message: error.message });
+      next(error);
     }
   }
 }
+
 export default UserController;
