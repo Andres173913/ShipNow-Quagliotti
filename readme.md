@@ -178,3 +178,50 @@ El sistema cuenta con una gestión centralizada de excepciones para asegurar res
   "stock": "10",
   "category": "ropa"
 }
+
+Sistema de Logging de la Aplicación
+Este proyecto utiliza Winston para la gestión centralizada de registros (logs), lo que permite un monitoreo eficiente tanto en desarrollo como en producción.
+
+🪵 Configuración del Sistema
+El sistema está configurado con niveles de prioridad personalizados para categorizar los eventos de la aplicación:
+
+⚙️ Niveles de Log
+El orden de severidad (de mayor a menor prioridad) es:
+
+fatal (0) - Fallas críticas que requieren atención inmediata.
+
+error (1) - Errores de ejecución o excepciones capturadas.
+
+warn (2) - Advertencias sobre estados inusuales.
+
+info (3) - Eventos operativos importantes.
+
+http (4) - Registro de peticiones HTTP.
+
+debug (5) - Información detallada para desarrollo.
+
+📁 Almacenamiento de Registros
+Los logs se guardan automáticamente en la carpeta logs/ con un sistema de rotación diaria (con retención de 14 días) para facilitar la gestión de archivos:
+
+fatal-%DATE%.log: Captura exclusivamente errores críticos (nivel fatal).
+
+error-%DATE%.log: Captura errores de la aplicación (nivel error).
+
+combined-%DATE%.log: Archivo central que registra toda la actividad de la aplicación de forma centralizada.
+
+Nota: En el entorno de desarrollo, los logs también se imprimen directamente en la consola con formato colorizado para facilitar la lectura en tiempo real.
+
+💻 Ejemplo de Uso en el Código
+El logger se encuentra centralizado y puede importarse en cualquier capa de la aplicación (servicios, controladores, middlewares):
+
+JavaScript
+import logger from '../utils/logger.js';
+
+// Registro de eventos operativos
+logger.info(`Usuario creado exitosamente con ID: ${newUser._id}`);
+
+// Registro al capturar una excepción
+logger.error(`Error al conectar con la base de datos: ${error.message}`);
+
+// Registro de eventos críticos
+logger.fatal('Falla crítica en el sistema de infraestructura');

@@ -1,5 +1,5 @@
 import winston from 'winston';
-import DailyRoDailyRotateFile from 'winston-daily-rotate-file';
+import DailyRotateFile from 'winston-daily-rotate-file';
 import path from 'path';
 
 import { config } from '../config/config.js';
@@ -18,8 +18,8 @@ const customLevel = {
         debug: 5
     },
     colors: {
-       fatal: 'red bold',
-         error: 'red',
+        fatal: 'red bold',
+        error: 'red',
         warn: 'yellow',
         info: 'blue',
         http: 'magenta',
@@ -32,8 +32,8 @@ winston.addColors(customLevel.colors);
 const consoleFormat = winston.format.combine(
     winston.format.colorize({ all: true }),
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    winston.format.printf((({timestamp, level, message, stack})=>{ 
-        return `${timestamp} [${level}]: ${stack ??message}`
+    winston.format.printf((({ timestamp, level, message, stack }) => {
+        return `${timestamp} [${level}]: ${stack ?? message}`;
     }))
 );
 
@@ -42,32 +42,42 @@ const fileFormat = winston.format.combine(
     winston.format.json()
 );
 
-const logger= winston.createLogger({
+const logger = winston.createLogger({
     levels: customLevel.levels,
     level: config.env === 'production' ? 'info' : 'debug',
     transports: [
+        // 1. Salida por consola
         new winston.transports.Console({ format: consoleFormat }),
-        new DailyRoDailyRotateFile({
+
+        // 2. Archivo rotativo exclusivo para errores
+        new DailyRotateFile({
             dirname: logDir,
             filename: 'error-%DATE%.log',
             datePattern: 'YYYY-MM-DD',
             level: 'error',
             format: fileFormat,
             maxFiles: '14d',
-        })      
-    ],
-    transports: [
-        ,
-        new winston.transports.Console({ format: consoleFormat }),
-        new DailyRoDailyRotateFile({
+        }),
+
+        // 3. Archivo rotativo exclusivo para fatales
+        new DailyRotateFile({
             dirname: logDir,
             filename: 'fatal-%DATE%.log',
             datePattern: 'YYYY-MM-DD',
             level: 'fatal',
             format: fileFormat,
             maxFiles: '14d',
-        }) 
-    ]    
-    })
+        }),
+
+        // 4. Archivo combinado (captura desde 'info' o 'debug' hacia abajo según tu nivel global)
+        new DailyRotateFile({
+            dirname: logDir,
+            filename: 'combined-%DATE%.log',
+            datePattern: 'YYYY-MM-DD',
+            format: fileFormat,
+            maxFiles: '14d',
+        })
+    ]
+});
 
 export default logger;
