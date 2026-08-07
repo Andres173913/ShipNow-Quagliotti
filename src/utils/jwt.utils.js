@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config/config.js';
+import  logger  from '../config/logger.js';
 
 // Generar un token con la información del usuario (payload)
 export const generateToken = (payload) => {
@@ -19,6 +20,8 @@ export const verifyToken = (token) => {
   try {
     return jwt.verify(token, config.JWT_SECRET);
   } catch (error) {
+    // Registramos el fallo de validación para tener visibilidad
+    logger.warn(`Fallo en la verificación del token JWT: ${error.message}`);
     return null; // Si expiró o es falso, retorna null
   }
 };

@@ -23,11 +23,11 @@ class ProductController {
         }
     }
 
-    // Método para obtener un producto por su nombre
-    static async getByName(req, res, next) {
+    // Método para obtener un producto por su título
+    static async getByTitle(req, res, next) {
         try {
-            const { name } = req.params;
-            const product = await ProductService.getByName(name);
+            const { title } = req.params;
+            const product = await ProductService.getByTitle(title);
             res.status(200).json({ status: "success", payload: product });
         } catch (error) {
             next(error);
@@ -37,8 +37,8 @@ class ProductController {
     // Método para crear un producto
     static async create(req, res, next) {
         try {
-            const { name, description, price, stock, category } = req.body;
-            const newProduct = await ProductService.create({ name, description, price, stock, category });
+            const { title, description, price, stock, category, code } = req.body;
+            const newProduct = await ProductService.create({ title, description, price, stock, category, code });
             res.status(201).json({ status: "success", payload: newProduct });
         } catch (error) {
             next(error);

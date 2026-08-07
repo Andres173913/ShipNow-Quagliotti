@@ -7,10 +7,12 @@ import UserModel from '../../models/user.model.js';
 import { USER_ROLES } from '../../constants/roles.js';
 import { ORDER_STATUS } from '../../constants/order.js';
 import { AppError, ERROR_CODES } from '../../errors/index.js';
+import logger from '../../config/logger.js';
 
 class MockService {
   // Generar Usuarios y Repartidores
   static generateMockUsers = (count) => {
+    logger.debug(`Generando ${count} usuarios mock en memoria...`);
     const roles = Object.values(USER_ROLES);
     return Array.from({ length: count }, () => ({
       first_name: faker.person.firstName(),
@@ -23,8 +25,11 @@ class MockService {
 
   static saveMockUsers = async (users) => {
     try {
-      return await UserModel.insertMany(users);
+      const result = await UserModel.insertMany(users);
+      logger.info(`Se guardaron exitosamente ${result.length} usuarios mock en la base de datos.`);
+      return result;
     } catch (error) {
+      logger.error(`Error al insertar usuarios simulados en MongoDB: ${error.message}`);
       throw new AppError(
         ERROR_CODES.INTERNAL_SERVER_ERROR,
         `Falla al insertar usuarios simulados en MongoDB: ${error.message}`
@@ -34,6 +39,7 @@ class MockService {
 
   // Generar Productos
   static generateMockProducts = (count) => {
+    logger.debug(`Generando ${count} productos mock en memoria...`);
     return Array.from({ length: count }, () => ({
       title: faker.commerce.productName(),
       description: faker.commerce.productDescription(),
@@ -47,8 +53,11 @@ class MockService {
 
   static saveMockProducts = async (products) => {
     try {
-      return await ProductModel.insertMany(products);
+      const result = await ProductModel.insertMany(products);
+      logger.info(`Se guardaron exitosamente ${result.length} productos mock en la base de datos.`);
+      return result;
     } catch (error) {
+      logger.error(`Error al insertar productos simulados en MongoDB: ${error.message}`);
       throw new AppError(
         ERROR_CODES.INTERNAL_SERVER_ERROR,
         `Falla al insertar productos simulados en MongoDB: ${error.message}`
@@ -58,6 +67,7 @@ class MockService {
 
   // Generar Órdenes (vinculando usuarios, productos y repartidores/couriers)
   static generateMockOrders = (count, userIds, productIds, courierIds) => {
+    logger.debug(`Generando ${count} órdenes mock en memoria...`);
     const statuses = Object.values(ORDER_STATUS);
 
     return Array.from({ length: count }, () => {
@@ -86,8 +96,11 @@ class MockService {
 
   static saveMockOrders = async (orders) => {
     try {
-      return await OrderModel.insertMany(orders);
+      const result = await OrderModel.insertMany(orders);
+      logger.info(`Se guardaron exitosamente ${result.length} órdenes mock en la base de datos.`);
+      return result;
     } catch (error) {
+      logger.error(`Error al insertar órdenes simuladas en MongoDB: ${error.message}`);
       throw new AppError(
         ERROR_CODES.INTERNAL_SERVER_ERROR,
         `Falla al insertar órdenes simuladas en MongoDB: ${error.message}`
@@ -101,6 +114,7 @@ class MockService {
     const products = await ProductModel.find({}, '_id');
 
     if (users.length === 0 || products.length === 0) {
+      logger.warn('Intento fallido de generar órdenes mock: faltan usuarios o productos previos en la BD.');
       throw new AppError(
         ERROR_CODES.VALIDATION_ERROR,
         'Se requieren usuarios y productos previos en la BD para simular órdenes.'

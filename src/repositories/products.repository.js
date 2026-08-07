@@ -11,9 +11,9 @@ class ProductRepository {
     return await ProductModel.findById(id);
   }
 
-  // Método para obtener un producto por su nombre
-  static async findByName(name) {
-    return await ProductModel.findOne({ name });
+  // Método para obtener un producto por su título
+  static async findByTitle(title) {
+    return await ProductModel.findOne({ title });
   }
 
   // Método para crear un nuevo producto

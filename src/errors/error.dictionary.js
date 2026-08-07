@@ -1,6 +1,6 @@
 import { ERROR_CODES } from "./error-codes.js";
 
-export const errorsDictionary = {
+export const errorsDictionary = Object.freeze({
     [ERROR_CODES.VALIDATION_ERROR]: {
         statusCode: 400,
         message: 'Los datos enviados no son validos'
@@ -41,4 +41,4 @@ export const errorsDictionary = {
         statusCode: 500,
         message: 'Error en el servidor'
     }
-};
+});
