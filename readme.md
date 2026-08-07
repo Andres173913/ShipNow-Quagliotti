@@ -172,20 +172,22 @@ El sistema cuenta con una gestión centralizada de excepciones para asegurar res
 * **Respuestas JSON Estructuradas:** Formato unificado de error que facilita la lectura por parte del cliente.
 
 **Ejemplo de payload de entrada validado:**
-```json
-{
-  "price": "8000",
-  "stock": "10",
-  "category": "ropa"
-};
+  ```json
+  {
+    "price": "8000",
+    "stock": "10",
+    "category": "ropa"
+  }
 
-Sistema de Logging de la Aplicación
+  ```
+
+## Sistema de Logging de la Aplicación
 Este proyecto utiliza Winston para la gestión centralizada de registros (logs), lo que permite un monitoreo eficiente tanto en desarrollo como en producción.
 
-🪵 Configuración del Sistema
+### 🪵 Configuración del Sistema
 El sistema está configurado con niveles de prioridad personalizados para categorizar los eventos de la aplicación:
 
-⚙️ Niveles de Log
+### ⚙️ Niveles de Log
 El orden de severidad (de mayor a menor prioridad) es:
 
 fatal (0) - Fallas críticas que requieren atención inmediata.
@@ -200,7 +202,7 @@ http (4) - Registro de peticiones HTTP.
 
 debug (5) - Información detallada para desarrollo.
 
-📁 Almacenamiento de Registros
+### 📁 Almacenamiento de Registros
 Los logs se guardan automáticamente en la carpeta logs/ con un sistema de rotación diaria (con retención de 14 días) para facilitar la gestión de archivos:
 
 fatal-%DATE%.log: Captura exclusivamente errores críticos (nivel fatal).
@@ -211,7 +213,7 @@ combined-%DATE%.log: Archivo central que registra toda la actividad de la aplica
 
 Nota: En el entorno de desarrollo, los logs también se imprimen directamente en la consola con formato colorizado para facilitar la lectura en tiempo real.
 
-💻 Ejemplo de Uso en el Código
+### 💻 Ejemplo de Uso en el Código
 El logger se encuentra centralizado y puede importarse en cualquier capa de la aplicación (servicios, controladores, middlewares):
 
 JavaScript
