@@ -177,7 +177,7 @@ El sistema cuenta con una gestión centralizada de excepciones para asegurar res
   "price": "8000",
   "stock": "10",
   "category": "ropa"
-}
+};
 
 Sistema de Logging de la Aplicación
 Este proyecto utiliza Winston para la gestión centralizada de registros (logs), lo que permite un monitoreo eficiente tanto en desarrollo como en producción.
