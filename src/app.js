@@ -1,10 +1,13 @@
 import express from "express";
 import cookieParser from "cookie-parser";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
 
 import { config } from "./config/config.js";
 import { connectDB } from "./config/db.js";
 import logger from "./config/logger.js";
-import { addLogger } from "./middlewares/logger.middleware.js"; // <-- 1. Importar el middleware del logger
+import { addLogger } from "./middlewares/logger.middleware.js"; // Importar el middleware del logger
+import { swaggerSpec } from "./config/swagger.config.js"; // Importar la configuración de Swagger
 
 import usersRoutes from "./routes/users.routes.js";
 import productsRoutes from "./routes/products.routes.js";
@@ -18,6 +21,9 @@ const app = express();
 
 // Middleware para parsear el body de las solicitudes como JSON
 app.use(express.json());
+
+// Middleware de Swagger
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Middleware para parsear cookies
 app.use(cookieParser());
 
@@ -26,7 +32,10 @@ app.use(addLogger);
 
 // Ruta de prueba para verificar que el servidor está corriendo
 app.get('/health', (req, res) => {
-  res.send(`ShipNow API v1 - corriendo en ${config.NODE_ENV}`);
+  res.json({
+    service: "ShipNow API",
+    environment: config.NODE_ENV
+  });
 });
 
 app.use('/api/logger-test', loggerRouter); // Ruta de prueba para verificar que el logger está funcionando

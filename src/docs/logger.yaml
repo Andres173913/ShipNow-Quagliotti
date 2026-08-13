@@ -1,0 +1,60 @@
+paths:
+  /api/logger-test/debug:
+    get:
+      tags:
+        - Logger
+      summary: Generar log de nivel debug
+      description: Endpoint de prueba para verificar el registro de logs con nivel debug.
+      responses:
+        '200':
+          $ref: '#/components/responses/TextResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/logger-test/info:
+    get:
+      tags:
+        - Logger
+      summary: Generar log de nivel info
+      description: Endpoint de prueba para verificar el registro de logs con nivel info.
+      responses:
+        '200':
+          $ref: '#/components/responses/TextResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/logger-test/warn:
+    get:
+      tags:
+        - Logger
+      summary: Generar log de nivel warn
+      description: Endpoint de prueba para verificar el registro de logs con nivel warn.
+      responses:
+        '200':
+          $ref: '#/components/responses/TextResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/logger-test/error:
+    get:
+      tags:
+        - Logger
+      summary: Generar log de nivel error
+      description: Endpoint de prueba para verificar el registro de logs con nivel error.
+      responses:
+        '200':
+          $ref: '#/components/responses/TextResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/logger-test/fatal:
+    get:
+      tags:
+        - Logger
+      summary: Generar log de nivel fatal
+      description: Endpoint de prueba para verificar el registro de logs con nivel fatal.
+      responses:
+        '200':
+          $ref: '#/components/responses/TextResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'

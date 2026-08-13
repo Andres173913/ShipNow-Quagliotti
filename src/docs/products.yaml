@@ -1,0 +1,137 @@
+paths:
+  /api/products:
+    get:
+      tags:
+        - Products
+      summary: Obtener todos los productos
+      description: Ruta pública. Permite consultar el catálogo completo de productos disponibles.
+      responses:
+        '200':
+          $ref: '#/components/responses/ProductsListResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+    post:
+      tags:
+        - Products
+      summary: Crear un nuevo producto
+      description: Ruta protegida. Solo accesible para administradores de la empresa.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreateRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/ProductCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          description: Prohibido. Se requiere rol de Administrador.
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/products/{id}:
+    get:
+      tags:
+        - Products
+      summary: Obtener producto por ID
+      description: Ruta pública. Permite consultar el detalle de un producto específico mediante su ID.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único del producto
+      responses:
+        '200':
+          $ref: '#/components/responses/ProductSingleResponse'
+        '404':
+          description: Producto no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+    patch:
+      tags:
+        - Products
+      summary: Actualizar producto por ID
+      description: Ruta protegida. Solo accesible para administradores.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único del producto a actualizar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Kit de Envíos Premium"
+                description:
+                  type: string
+                  example: "Caja reforzada para envíos pesados"
+                code:
+                  type: string
+                  example: "EXPRESS-KIT-001"
+                price:
+                  type: number
+                  example: 1800.00
+                stock:
+                  type: integer
+                  example: 80
+                category:
+                  type: string
+                  example: "Embalaje"
+      responses:
+        '200':
+          $ref: '#/components/responses/ProductSingleResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          description: Prohibido. Se requiere rol de Administrador.
+        '404':
+          description: Producto no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+    delete:
+      tags:
+        - Products
+      summary: Eliminar producto por ID
+      description: Ruta protegida. Solo accesible para administradores.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único del producto a eliminar
+      responses:
+        '200':
+          description: Producto eliminado correctamente
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          description: Prohibido. Se requiere rol de Administrador.
+        '404':
+          description: Producto no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'

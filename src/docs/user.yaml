@@ -1,0 +1,202 @@
+paths:
+  /api/users:
+    post:
+      tags:
+        - Users
+      summary: Crear un usuario
+      description: Permite registrar un nuevo usuario en el sistema.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/UserCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '409':
+          $ref: '#/components/responses/ConflictResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+    get:
+      tags:
+        - Users
+      summary: Obtener todos los usuarios
+      description: Requiere autenticación y rol de ADMIN o COURIER.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/UsersListResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/users/login:
+    post:
+      tags:
+        - Users
+      summary: Iniciar sesión de usuario
+      description: Autentica al usuario y genera la cookie de sesión.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                password:
+                  type: string
+                  format: password
+                  example: SecurePassword123
+      responses:
+        '200':
+          description: Login exitoso
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/users/search:
+    get:
+      tags:
+        - Users
+      summary: Buscar usuario por email
+      description: Requiere autenticación.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: email
+          required: true
+          schema:
+            type: string
+            format: email
+          description: Correo electrónico del usuario a buscar
+      responses:
+        '200':
+          description: Usuario encontrado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: Usuario no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Obtener usuario por ID
+      description: Requiere autenticación.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único del usuario
+      responses:
+        '200':
+          description: Usuario encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: Usuario no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+    patch:
+      tags:
+        - Users
+      summary: Actualizar usuario por ID
+      description: Requiere autenticación.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único del usuario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  example: John
+                last_name:
+                  type: string
+                  example: Doe
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                role:
+                  type: string
+                  example: admin
+      responses:
+        '200':
+          description: Usuario actualizado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: Usuario no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+    delete:
+      tags:
+        - Users
+      summary: Eliminar usuario por ID
+      description: Requiere autenticación y rol exclusivo de ADMIN.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único del usuario a eliminar
+      responses:
+        '200':
+          description: Usuario eliminado correctamente
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          description: Prohibido (Se requiere rol ADMIN)
+        '404':
+          description: Usuario no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'

@@ -1,0 +1,76 @@
+paths:
+  /api/orders/courier/available:
+    get:
+      tags:
+        - Orders
+      summary: Obtener pedidos disponibles para couriers
+      description: Ruta protegida. Permite a los couriers o administradores consultar los pedidos que están pendientes de ser tomados.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/OrdersListResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          description: Prohibido. Se requiere rol de Courier o Administrador.
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/orders/{id}/accept:
+    patch:
+      tags:
+        - Orders
+      summary: Aceptar un pedido
+      description: Ruta protegida. Permite a un courier o administrador aceptar/asignarse un pedido disponible.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único de la orden a aceptar
+      responses:
+        '200':
+          $ref: '#/components/responses/OrderSingleResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          description: Prohibido. Se requiere rol de Courier o Administrador.
+        '404':
+          description: Pedido no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/orders/{id}/deliver:
+    patch:
+      tags:
+        - Orders
+      summary: Marcar un pedido como entregado
+      description: Ruta protegida. Permite actualizar el estado de una orden a entregada.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único de la orden a marcar como entregada
+      responses:
+        '200':
+          $ref: '#/components/responses/OrderSingleResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          description: Prohibido. Se requiere rol de Courier o Administrador.
+        '404':
+          description: Pedido no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'

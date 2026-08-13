@@ -1,0 +1,12 @@
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Service Health status
+      description: >
+        This endpoint checks the health of the API and returns a simple status message.
+        DB connection isn't checked here, only the API's ability to respond to requests.
+      responses:
+        '200':
+          $ref: '#/components/responses/HealthResponse'

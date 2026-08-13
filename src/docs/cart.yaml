@@ -1,0 +1,63 @@
+paths:
+  /api/cart:
+    get:
+      tags:
+        - Carts
+      summary: Obtener el carrito del usuario
+      description: Ruta protegida. Devuelve el carrito de compras asociado al usuario autenticado.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/CartSingleResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: Carrito no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+    delete:
+      tags:
+        - Carts
+      summary: Vaciar el carrito
+      description: Ruta protegida. Elimina todos los productos del carrito del usuario autenticado.
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          $ref: '#/components/responses/CartSingleResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: Carrito no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/cart/products:
+    post:
+      tags:
+        - Carts
+      summary: Agregar un producto al carrito
+      description: Ruta protegida. Añade una cantidad específica de un producto al carrito del usuario.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CartAddRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/CartSingleResponse'
+        '201':
+          $ref: '#/components/responses/CartSingleResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: Producto o carrito no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'

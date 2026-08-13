@@ -227,3 +227,33 @@ logger.error(`Error al conectar con la base de datos: ${error.message}`);
 
 // Registro de eventos críticos
 logger.fatal('Falla crítica en el sistema de infraestructura');
+
+**Ejemplo de payload de /api/logger-test/debug:**
+  ```json
+  {
+    "Debug log generated"
+  }
+
+ ```
+
+**Ejemplo de payload de /api/logger-test/error:**
+ ```json
+  {
+    "Error log generated"
+  }
+
+  ```
+
+## 📄 Documentación de la API (Swagger)
+
+El proyecto cuenta con documentación interactiva generada con **Swagger** (`swagger-jsdoc` y `swagger-ui-express`), permitiendo visualizar, probar y consultar todos los endpoints de la API directamente desde el navegador.
+
+### 🚀 ¿Cómo acceder?
+
+Una vez que el servidor esté levantado localmente, podés ingresar a la siguiente ruta:
+
+* **URL de Documentación:** `http://localhost:3000/api/docs` *(o el puerto que tengas configurado en tu `.env`)*
+
+### 🔍 Características de la Interfaz
+* **Modelos y Esquemas:** Muestra la estructura exacta de los objetos (Usuarios, Productos, Órdenes) con sus tipos de datos y validaciones.
+* **Pruebas en Vivo (Try it out):** Permite ejecutar peticiones HTTP (`GET`, `POST`, `PATCH`, `DELETE`) directamente contra la API, incluyendo la inyección de tokens JWT para las rutas protegidas.

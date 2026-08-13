@@ -1,0 +1,80 @@
+paths:
+  /api/mocking/mocking-users:
+    get:
+      tags:
+        - Mocks
+      summary: Obtener usuarios simulados
+      description: Genera y devuelve una lista de usuarios de prueba sin guardarlos en la base de datos.
+      parameters:
+        - $ref: '#/components/parameters/countQueryParam'
+      responses:
+        '200':
+          description: Lista de usuarios simulados generada exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/mocking/mocking-products:
+    get:
+      tags:
+        - Mocks
+      summary: Obtener productos simulados
+      description: Genera y devuelve una lista de productos de prueba sin guardarlos en la base de datos.
+      parameters:
+        - $ref: '#/components/parameters/countQueryParam'
+      responses:
+        '200':
+          description: Lista de productos simulados generada exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/mocking/mocking-orders:
+    get:
+      tags:
+        - Mocks
+      summary: Obtener pedidos simulados
+      description: Genera y devuelve una lista de pedidos de prueba sin guardarlos en la base de datos.
+      parameters:
+        - $ref: '#/components/parameters/countOrderQueryParam'
+      responses:
+        '200':
+          description: Lista de pedidos simulados generada exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/mocking/generate-data:
+    post:
+      tags:
+        - Mocks
+      summary: Generar e insertar datos de prueba en la base de datos
+      description: Inserta registros controlados de usuarios, productos y/o pedidos en MongoDB para pruebas.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockGenerateRequest'
+      responses:
+        '201':
+          $ref: '#/components/responses/MockSuccessResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'
