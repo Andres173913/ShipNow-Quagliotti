@@ -257,3 +257,22 @@ Una vez que el servidor esté levantado localmente, podés ingresar a la siguien
 ### 🔍 Características de la Interfaz
 * **Modelos y Esquemas:** Muestra la estructura exacta de los objetos (Usuarios, Productos, Órdenes) con sus tipos de datos y validaciones.
 * **Pruebas en Vivo (Try it out):** Permite ejecutar peticiones HTTP (`GET`, `POST`, `PATCH`, `DELETE`) directamente contra la API, incluyendo la inyección de tokens JWT para las rutas protegidas.
+
+## 🧪 Testing y Calidad de Código
+
+El proyecto incluye una suite completa de **tests unitarios** desarrollada con **Mocha** y **Chai**, enfocada en validar la lógica de los middlewares, controladores, manejo de errores, esquemas y configuraciones del sistema sin necesidad de levantar servicios externos pesados.
+
+### 🚀 ¿Cómo ejecutar los tests?
+
+Para correr toda la suite de pruebas configurada en el proyecto:
+
+```bash
+npm test
+📂 Estructura de la Suite de Pruebas
+Los tests se encuentran organizados dentro de la carpeta test/, imitando la estructura de la aplicación:
+
+Middlewares: Validación de autenticación JWT (authenticateToken), control de roles (authorizeRoles), logger de peticiones y manejo global de errores (errorHandler).
+
+Controladores: Pruebas unitarias para los endpoints de Usuarios, Productos, Órdenes y Carritos mediante mockeo de servicios.
+
+Configuración y Diccionarios: Pruebas de inmutabilidad (Object.freeze) en los códigos y diccionarios de error, variables de entorno y conexión a base de datos.

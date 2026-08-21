@@ -2,14 +2,14 @@
   "name": "shipnow",
   "version": "1.0.0",
   "description": "",
-  "main": "app.js",
+  "main": "server.js",
   "repository": {
     "type": "git",
     "url": "git+https://https://github.com/Andres173913/ShipNow-Quagliotti.git"
   },
   "scripts": {
-    "dev": "node --watch src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node --watch src/server.js",
+    "test": "mocha --file test/setup.js \"test/**/*.test.js\" --timeout 10000"
   },
   "keywords": [],
   "author": "",
@@ -27,5 +27,10 @@
     "swagger-ui-express": "^5.0.1",
     "winston": "^3.19.0",
     "winston-daily-rotate-file": "^5.0.0"
+  },
+  "devDependencies": {
+    "chai": "^6.2.2",
+    "mocha": "^11.8.0",
+    "supertest": "^7.2.2"
   }
 }

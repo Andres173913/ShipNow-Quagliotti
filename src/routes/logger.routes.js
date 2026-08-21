@@ -2,6 +2,11 @@ import express from "express";
 
 const loggerRouter = express.Router();
 
+loggerRouter.get('/', (req, res) => {
+    req.logger.info('Test logger endpoint');
+    res.status(200).json({status:'succes', message:'Logger endpoint working'});
+});
+
 loggerRouter.get('/debug', (req, res) => {
   req.logger.debug('Debug level log');
   res.send('Debug log generated');

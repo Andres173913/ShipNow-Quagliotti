@@ -4,7 +4,6 @@ import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 
 import { config } from "./config/config.js";
-import { connectDB } from "./config/db.js";
 import logger from "./config/logger.js";
 import { addLogger } from "./middlewares/logger.middleware.js"; // Importar el middleware del logger
 import { swaggerSpec } from "./config/swagger.config.js"; // Importar la configuración de Swagger
@@ -51,9 +50,4 @@ app.use('/api/mocking', mocksRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-// Conexión a la base de datos e inicio del servidor
-connectDB();
-
-app.listen(config.PORT, () => {
-  logger.info(`Server is running on port ${config.PORT}`);
-});
+export default app;
