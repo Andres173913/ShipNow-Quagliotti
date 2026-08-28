@@ -200,3 +200,52 @@ paths:
           description: Usuario no encontrado
         '500':
           $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/users/{id}/documents:
+    post:
+      tags:
+        - Users
+      summary: Subir documento de usuario
+      description: Permite subir un documento (como DNI o licencia) asociado a un usuario usando multipart/form-data. Requiere autenticación.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único del usuario
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - document
+                - documentType
+              properties:
+                document:
+                  type: string
+                  format: binary
+                  description: Archivo del documento a subir
+                documentType:
+                  type: string
+                  example: DNI
+                  description: Tipo de documento (ej. DNI, licencia)
+      responses:
+        '200':
+          description: Documento subido y asociado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '404':
+          description: Usuario no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'

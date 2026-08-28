@@ -80,6 +80,22 @@ export const responses = {
       }
     }
   },
+  ForbiddenResponse: {
+    description: "Forbidden response",
+    content: {
+      "application/json": {
+        schema: {
+          type: "object",
+          properties: {
+            message: {
+              type: "string",
+              example: "Access denied"
+            }
+          }
+        }
+      }
+    }
+  },
   InternalServerErrorResponse: {
     description: "Internal Server Error response",
     content: {

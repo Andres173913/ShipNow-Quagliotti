@@ -34,6 +34,25 @@ describe('Order Controller Unit Tests', () => {
       expect(responseBody.status).to.equal('success');
       expect(responseBody.payload).to.deep.equal(fakeOrders);
     });
+
+    it('debería delegar el error a next si OrderService.getAvailableOrdersForCourier falla', async () => {
+      const req = {};
+      const res = {};
+      let errorCaptured = null;
+      const next = (err) => { errorCaptured = err; };
+
+      const originalGetAvailable = OrderService.getAvailableOrdersForCourier;
+      OrderService.getAvailableOrdersForCourier = async () => { throw new Error('DB Error'); };
+
+      try {
+        await OrderController.getAvailable(req, res, next);
+      } finally {
+        OrderService.getAvailableOrdersForCourier = originalGetAvailable;
+      }
+
+      expect(errorCaptured).to.exist;
+      expect(errorCaptured.message).to.equal('DB Error');
+    });
   });
 
   describe('accept', () => {
@@ -56,7 +75,7 @@ describe('Order Controller Unit Tests', () => {
       };
       const next = (err) => { throw err; };
 
-      const updatedOrder = { _id: 'ord-123', courier: 'courier-uuid-456', status: 'assigned' };
+      const updatedOrder = { _id: 'ord-123', courier: 'courier-uuid-456', status: 'accepted' };
       const originalAccept = OrderService.acceptOrder;
       OrderService.acceptOrder = async (orderId, courierId) => {
         expect(orderId).to.equal('ord-123');
@@ -115,6 +134,47 @@ describe('Order Controller Unit Tests', () => {
       expect(responseBody.status).to.equal('success');
       expect(responseBody.message).to.include('Pedido marcado como entregado');
       expect(responseBody.order).to.deep.equal(deliveredOrder);
+    });
+  });
+
+  describe('uploadReceipt', () => {
+    it('debería subir y asociar el comprobante a la orden y retornar status 200', async () => {
+      const req = {
+        params: { id: 'ord-123' },
+        file: { originalname: 'receipt.pdf', filename: 'gen-receipt.pdf', path: '/uploads/gen-receipt.pdf', mimetype: 'application/pdf', size: 1024 }
+      };
+
+      let responseStatus = null;
+      let responseBody = null;
+
+      const res = {
+        status: (code) => {
+          responseStatus = code;
+          return {
+            json: (data) => { responseBody = data; }
+          };
+        }
+      };
+      const next = (err) => { throw err; };
+
+      const updatedOrder = { _id: 'ord-123', receipts: [req.file] };
+      const originalUploadReceipt = OrderService.uploadReceipt;
+      OrderService.uploadReceipt = async (orderId, file) => {
+        expect(orderId).to.equal('ord-123');
+        expect(file).to.deep.equal(req.file);
+        return updatedOrder;
+      };
+
+      try {
+        await OrderController.uploadReceipt(req, res, next);
+      } finally {
+        OrderService.uploadReceipt = originalUploadReceipt;
+      }
+
+      expect(responseStatus).to.equal(200);
+      expect(responseBody.status).to.equal('success');
+      expect(responseBody.message).to.include('Comprobante subido y asociado con éxito');
+      expect(responseBody.order).to.deep.equal(updatedOrder);
     });
   });
 

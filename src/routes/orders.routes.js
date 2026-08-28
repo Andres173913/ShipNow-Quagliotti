@@ -3,6 +3,7 @@ import express from 'express';
 import OrderController from '../controllers/orders.controller.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/auth.middleware.js';
 import { USER_ROLES } from '../constants/roles.js';
+import uploader from '../config/multer.config.js';
 
 const ordersRoutes = express.Router();
 
@@ -30,6 +31,15 @@ ordersRoutes.patch(
   authenticateToken, 
   authorizeRoles(USER_ROLES.COURIER, USER_ROLES.ADMIN), 
   OrderController.deliver
+);
+
+// Endpoint para subir y asociar un comprobante o recibo a una orden/entrega
+ordersRoutes.post(
+  '/:id/receipt',
+  authenticateToken,
+  authorizeRoles(USER_ROLES.COURIER, USER_ROLES.ADMIN),
+  uploader.single('receipt'), // Campo esperado en el multipart/form-data
+  OrderController.uploadReceipt
 );
 
 export default ordersRoutes;

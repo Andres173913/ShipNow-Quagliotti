@@ -135,3 +135,49 @@ paths:
           description: Producto no encontrado
         '500':
           $ref: '#/components/responses/InternalServerErrorResponse'
+
+  /api/products/{id}/image:
+    post:
+      tags:
+        - Products
+      summary: Subir imagen o thumbnail de un producto
+      description: Ruta protegida. Permite subir y asociar una imagen de miniatura a un producto mediante multipart/form-data. Solo administradores.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único del producto
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - thumbnail
+              properties:
+                thumbnail:
+                  type: string
+                  format: binary
+                  description: Archivo de imagen o thumbnail del producto
+      responses:
+        '200':
+          description: Imagen subida y asociada exitosamente al producto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductSingleResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          description: Prohibido. Se requiere rol de Administrador.
+        '404':
+          description: Producto no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'

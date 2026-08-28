@@ -14,6 +14,32 @@ export const schemas = {
       },
     }
   },
+  DocumentMetadata: {
+    type: "object",
+    description: "Metadatos de un archivo o documento subido por el usuario",
+    properties: {
+      originalName: { type: "string", example: "dni_frente.jpg" },
+      generatedName: { type: "string", example: "file-1685000000000-123456789.jpg" },
+      path: { type: "string", example: "uploads/documents/file-1685000000000-123456789.jpg" },
+      mimetype: { type: "string", example: "image/jpeg" },
+      size: { type: "integer", example: 102400 },
+      documentType: { type: "string", example: "DNI" },
+      uploadedAt: { type: "string", format: "date-time", example: "2026-06-01T12:00:00.000Z" }
+    }
+  },
+  ReceiptMetadata: {
+    type: "object",
+    description: "Metadatos de un comprobante de entrega asociado a la orden",
+    properties: {
+      originalName: { type: "string", example: "comprobante.pdf" },
+      generatedName: { type: "string", example: "file-1685000000001-987654321.pdf" },
+      path: { type: "string", example: "uploads/receipts/file-1685000000001-987654321.pdf" },
+      mimetype: { type: "string", example: "application/pdf" },
+      size: { type: "integer", example: 204800 },
+      documentType: { type: "string", example: "receipt" },
+      uploadedAt: { type: "string", format: "date-time", example: "2026-06-01T12:30:00.000Z" }
+    }
+  },
   User: {
     type: "object",
     description: "Password never returned in response",
@@ -39,6 +65,12 @@ export const schemas = {
         type: "string",
         enum: Object.values(USER_ROLES),
         example: "admin"
+      },
+      documents: {
+        type: "array",
+        items: {
+          $ref: "#/components/schemas/DocumentMetadata"
+        }
       }
     }
   },
@@ -102,6 +134,10 @@ export const schemas = {
       code: {
         type: "string",
         example: "EXPRESS-KIT-001"
+      },
+      thumbnail: {
+        type: "string",
+        example: "uploads/products/thumbnail-12345.jpg"
       }
     }
   },
@@ -163,6 +199,12 @@ export const schemas = {
       delivery_address: {
         type: "string",
         example: "Av. Pellegrini 1234, Rosario"
+      },
+      receipts: {
+        type: "array",
+        items: {
+          $ref: "#/components/schemas/ReceiptMetadata"
+        }
       }
     }
   },

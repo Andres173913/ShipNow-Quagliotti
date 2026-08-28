@@ -44,10 +44,17 @@ class MockService {
       title: faker.commerce.productName(),
       description: faker.commerce.productDescription(),
       price: parseFloat(faker.commerce.price()),
-      code: faker.string.alphanumeric({ length: 10 }),
+      code: faker.string.alphanumeric({ length: 10 }).toUpperCase(),
       category: faker.commerce.department(),
       stock: faker.number.int({ min: 0, max: 100 }),
-      thumbnails: [faker.image.url({ category: 'product', width: 640, height: 480 })],
+      thumbnails: [{
+        originalName: 'mock.jpg',
+        generatedName: 'mock.jpg',
+        path: faker.image.url({ width: 640, height: 480 }),
+        mimetype: 'image/jpeg',
+        size: 1024,
+        documentType: 'image'
+      }],
     }));
   };
 
@@ -85,10 +92,14 @@ class MockService {
       });
 
       return {
+        client: randomUserId,
         userId: randomUserId,
         products: orderProducts,
+        total_price: parseFloat(total.toFixed(2)),
         total: parseFloat(total.toFixed(2)),
+        delivery_address: faker.location.streetAddress(),
         status: faker.helpers.arrayElement(statuses),
+        courier: courierIds.length > 0 && Math.random() > 0.5 ? faker.helpers.arrayElement(courierIds) : null,
         courierId: courierIds.length > 0 && Math.random() > 0.5 ? faker.helpers.arrayElement(courierIds) : null,
       };
     });

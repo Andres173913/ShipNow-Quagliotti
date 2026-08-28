@@ -134,6 +134,51 @@ class UserService {
     return { user, token };
   }
 
+  //Subir y asociar un documento al usuario
+  static async uploadDocument(userId, file, documentType) {
+    // Validar existencia del usuario
+    const user = await UserRepository.findById(userId);
+    if (!user) {
+      logger.warn(`⚠️ Intento de subida fallido: Usuario con ID ${userId} no encontrado.`);
+      throw new AppError(ERROR_CODES.USER_NOT_FOUND);
+    }
+
+    //  Validar que el archivo exista (viene del middleware de multer)
+    if (!file) {
+      logger.warn(`⚠️ Intento de subida fallido: No se adjuntó archivo para el usuario ${userId}.`);
+      throw new AppError(ERROR_CODES.VALIDATION_ERROR, 'Es necesario adjuntar un archivo.');
+    }
+
+    // Validar tipos de documentos permitidos (según criterio de aceptación)
+    const validDocumentTypes = ['dni', 'license', 'certificate', 'other'];
+    const docType = (documentType || 'other').toLowerCase();
+
+    if (!validDocumentTypes.includes(docType)) {
+      logger.warn(`⚠️ Intento de subida fallido: Tipo de documento inválido ('${docType}').`);
+      throw new AppError(ERROR_CODES.VALIDATION_ERROR, `Tipo de documento inválido. Opciones permitidas: ${validDocumentTypes.join(', ')}.`);
+    }
+
+    //  Construir objeto de metadatos exacto requerido
+    const documentMetadata = {
+      originalName: file.originalname,
+      generatedName: file.filename,
+      path: file.path,
+      mimetype: file.mimetype,
+      size: file.size,
+      documentType: docType,
+      uploadedAt: new Date()
+    };
+
+    //  Guardar metadatos en el array de documentos del usuario usando el repositorio
+    const updatedUser = await UserRepository.update(userId, {
+      $push: { documents: documentMetadata }
+    });
+
+    logger.info(`📄 Documento '${docType}' subido y asociado exitosamente al usuario ID: ${userId}`);
+
+    return updatedUser;
+  }
+
 }
 
 export default UserService;

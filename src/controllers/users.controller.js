@@ -95,6 +95,25 @@ class UserController {
       next(error);
     }
   }
+
+  // Subir documento de usuario
+  static async uploadDocument(req, res, next) {
+    try {
+      const { id } = req.params; // Asegúrate de que el parámetro en tu ruta sea :id o :uid
+      const { documentType } = req.body;
+      const file = req.file;
+
+      const updatedUser = await UserService.uploadDocument(id, file, documentType);
+
+      res.status(200).json({ 
+        status: "success", 
+        message: "Documento subido y asociado correctamente", 
+        payload: updatedUser 
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default UserController;

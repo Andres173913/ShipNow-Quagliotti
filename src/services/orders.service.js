@@ -60,6 +60,38 @@ class OrderService {
 
     return deliveredOrder;
   }
+
+  // Subir y asociar un comprobante/documento a la orden
+  static async uploadReceipt(orderId, file) {
+    const order = await OrderRepository.findById(orderId);
+    if (!order) {
+      logger.warn(`⚠️ Intento de subida de comprobante fallido: Pedido ID ${orderId} no encontrado.`);
+      throw new AppError(ERROR_CODES.ORDER_NOT_FOUND, 'El pedido no existe.');
+    }
+
+    if (!file) {
+      logger.warn(`⚠️ Intento de subida fallido: No se adjuntó archivo de comprobante para el pedido ${orderId}.`);
+      throw new AppError(ERROR_CODES.VALIDATION_ERROR, 'Es necesario adjuntar un archivo de comprobante.');
+    }
+
+    const receiptMetadata = {
+      originalName: file.originalname,
+      generatedName: file.filename,
+      path: file.path,
+      mimetype: file.mimetype,
+      size: file.size,
+      documentType: 'receipt',
+      uploadedAt: new Date()
+    };
+
+    const updatedOrder = await OrderRepository.update(orderId, {
+      $push: { receipts: receiptMetadata } // o simplemente `receipt: receiptMetadata` dependiendo de si tu esquema lo maneja como array u objeto único
+    });
+
+    logger.info(`📦 Comprobante asociado exitosamente a la orden ID: ${orderId}`);
+
+    return updatedOrder;
+  }
 }
 
 export default OrderService;

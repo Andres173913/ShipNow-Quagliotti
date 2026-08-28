@@ -3,6 +3,7 @@ import express from "express";
 import UserController from "../controllers/users.controller.js";
 import {authenticateToken, authorizeRoles} from "../middlewares/auth.middleware.js";
 import {USER_ROLES} from "../constants/roles.js";
+import uploader from "../config/multer.config.js";
 
 const usersRoutes = express.Router();
 
@@ -26,5 +27,8 @@ usersRoutes.patch('/:id', authenticateToken, UserController.update);
 // Query para eliminar segun id
 usersRoutes.delete('/:id', authenticateToken, authorizeRoles(USER_ROLES.ADMIN), UserController.delete);
 
+// --- RUTA PARA SUBIDA DE ARCHIVOS / DOCUMENTOS ---
+// El middleware de multer procesa el archivo antes de llegar al controlador
+usersRoutes.post('/:id/documents', authenticateToken, uploader.single('document'), UserController.uploadDocument);
 
 export default usersRoutes;

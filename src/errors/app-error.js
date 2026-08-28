@@ -9,6 +9,7 @@ export class AppError extends Error {
         super(customMessage ?? errorDefinition.message);
 
         this.code = resolvedMessage;
+        this.status = errorDefinition.statusCode;
         this.statusCode = errorDefinition.statusCode;
         this.details = details || null;
         this.message = customMessage ?? errorDefinition.message;

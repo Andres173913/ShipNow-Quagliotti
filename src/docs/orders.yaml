@@ -74,3 +74,49 @@ paths:
           description: Pedido no encontrado
         '500':
           $ref: '#/components/responses/InternalServerErrorResponse'
+
+  api/orders/{id}/receipt:
+    post:
+      tags:
+        - Orders
+      summary: Subir comprobante de orden
+      description: Ruta protegida. Permite subir un archivo de comprobante o recibo asociado a una orden mediante multipart/form-data.
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID único de la orden
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - receipt
+              properties:
+                receipt:
+                  type: string
+                  format: binary
+                  description: Archivo del comprobante o recibo
+      responses:
+        '200':
+          description: Comprobante subido y asociado con éxito
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/OrderSingleResponse'
+        '400':
+          $ref: '#/components/responses/BadRequestResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          description: Prohibido. Se requiere rol de Courier o Administrador.
+        '404':
+          description: Pedido no encontrado
+        '500':
+          $ref: '#/components/responses/InternalServerErrorResponse'

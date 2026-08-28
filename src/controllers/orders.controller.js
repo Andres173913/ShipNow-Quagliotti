@@ -37,6 +37,19 @@ class OrderController {
       next(error);
     }
   }
+
+  //Subir comprobante o recibo asociado a una orden
+  static async uploadReceipt(req, res, next) {
+    try {
+      const { id } = req.params;
+      const file = req.file;
+
+      const updatedOrder = await OrderService.uploadReceipt(id, file);
+      res.status(200).json({ status: "success", message: 'Comprobante subido y asociado con éxito', order: updatedOrder });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default OrderController;

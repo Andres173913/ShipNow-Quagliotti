@@ -9,7 +9,7 @@ class ProductService {
     return await ProductRepository.find();
   }
 
-  // Método para obtener un producto por su ID, lanzando un error si no existe
+  // Método para obtener un producto por su ID
   static async getById(id) {
     const product = await ProductRepository.findById(id);
     if (!product) {
@@ -19,7 +19,7 @@ class ProductService {
     return product;
   }
 
-  // Método para obtener un producto por su título, lanzando un error si no existe
+  // Método para obtener un producto por su título
   static async getByTitle(title) {
     const product = await ProductRepository.findByTitle(title);
     if (!product) {
@@ -29,15 +29,13 @@ class ProductService {
     return product;
   }
 
-  // Método para crear un producto, primero validar que no exista otro con el mismo título
+  // Método para crear un producto
   static async create(productData) {
-    // Validar campos obligatorios básicos según tu esquema
     if (!productData || !productData.title || !productData.description || !productData.price || !productData.code || !productData.category) {
       logger.warn(`⚠️ Intento de creación fallido: Faltan campos obligatorios para el producto.`);
       throw new AppError(ERROR_CODES.VALIDATION_ERROR, 'Todos los campos obligatorios (title, description, price, code, category) deben estar completos.');
     }
-    
-    // Evitar títulos duplicados
+
     const existingProduct = await ProductRepository.findByTitle(productData.title);
     if (existingProduct) {
       logger.warn(`⚠️ Intento de creación fallido: Ya existe un producto con el título '${productData.title}'`);
@@ -46,20 +44,18 @@ class ProductService {
 
     const newProduct = await ProductRepository.create(productData);
     logger.info(`📦 Producto creado exitosamente: '${newProduct.title}' (ID: ${newProduct._id})`);
-    
+
     return newProduct;
   }
 
-  // Actualizar un producto, primero validar existencia y luego validar título
+  // Actualizar un producto
   static async update(id, data) {
-    // Validar existencia
     const product = await ProductRepository.findById(id);
     if (!product) {
       logger.warn(`⚠️ Intento de actualización fallido: Producto con ID ${id} no encontrado.`);
       throw new AppError(ERROR_CODES.PRODUCT_NOT_FOUND);
     }
 
-    // Si se modifica el título, validar que no choque con otro existente
     if (data.title && data.title !== product.title) {
       const duplicate = await ProductRepository.findByTitle(data.title);
       if (duplicate) {
@@ -70,11 +66,11 @@ class ProductService {
 
     const updatedProduct = await ProductRepository.update(id, data);
     logger.info(`🔄 Producto actualizado exitosamente: ID ${id}, Título: ${updatedProduct.title}`);
-    
+
     return updatedProduct;
   }
 
-  // Eliminar un producto, primero validar existencia
+  // Eliminar un producto
   static async delete(id) {
     const product = await ProductRepository.findById(id);
     if (!product) {
@@ -84,8 +80,41 @@ class ProductService {
 
     const deletedProduct = await ProductRepository.delete(id);
     logger.info(`🗑️ Producto eliminado: ID ${id} ('${product.title}')`);
-    
+
     return deletedProduct;
+  }
+
+  // Método para agregar la ruta de la imagen procesada por Multer al array de thumbnails
+  static async addThumbnail(id, file) {
+    const product = await ProductRepository.findById(id);
+    if (!product) {
+      logger.warn(`⚠️ Intento de subida de imagen fallido: Producto con ID ${id} no encontrado.`);
+      throw new AppError(ERROR_CODES.PRODUCT_NOT_FOUND);
+    }
+
+    if (!file) {
+      logger.warn(`⚠️ Intento de subida fallido: No se adjuntó archivo para el producto ${id}.`);
+      throw new AppError(ERROR_CODES.VALIDATION_ERROR, 'Es necesario adjuntar una imagen.');
+    }
+
+    const thumbnailObj = typeof file === 'string'
+      ? { originalName: 'image.jpg', generatedName: 'image.jpg', path: file, mimetype: 'image/jpeg', size: 0, documentType: 'image' }
+      : {
+          originalName: file.originalname || file.originalName || file.filename || 'image.jpg',
+          generatedName: file.filename || file.generatedName || 'image.jpg',
+          path: file.path || `/uploads/${file.filename || 'image.jpg'}`,
+          mimetype: file.mimetype || 'image/jpeg',
+          size: file.size || 0,
+          documentType: 'image'
+        };
+
+    const updatedProduct = await ProductRepository.update(id, {
+      $push: { thumbnails: thumbnailObj }
+    });
+
+    logger.info(`🖼️ Imagen agregada exitosamente al producto ID: ${id}`);
+
+    return updatedProduct;
   }
 }
 

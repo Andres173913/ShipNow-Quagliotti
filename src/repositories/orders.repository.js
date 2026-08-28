@@ -13,12 +13,15 @@ class OrderRepository {
 
   // Buscar órdenes que necesitan repartidor (Estado READY y sin courier asignado)
   static async findAvailableForCouriers() {
-    return await OrderModel.find({ status: 'READY', courierId: null });
+    return await OrderModel.find({ status: 'READY', $or: [{ courierId: null }, { courier: null }] });
   }
 
   //Actualizar una orden por su ID
   static async update(id, data) {
-    return await OrderModel.findByIdAndUpdate(id, data, { returnDocument: 'after' });
+    const updateData = { ...data };
+    if (updateData.courierId && !updateData.courier) updateData.courier = updateData.courierId;
+    if (updateData.courier && !updateData.courierId) updateData.courierId = updateData.courier;
+    return await OrderModel.findByIdAndUpdate(id, updateData, { returnDocument: 'after' });
   }
 }
 

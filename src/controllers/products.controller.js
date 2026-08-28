@@ -66,6 +66,24 @@ class ProductController {
             next(error);
         }
     }
+
+    // Método para agregar la imagen procesada por Multer al array thumbnails del producto
+    static async addThumbnail(req, res, next) {
+        try {
+            const { id } = req.params;
+            const file = req.file;
+
+            const updatedProduct = await ProductService.addThumbnail(id, file);
+
+            res.status(200).json({
+                status: "success",
+                message: "Imagen agregada correctamente al producto",
+                payload: updatedProduct
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default ProductController;

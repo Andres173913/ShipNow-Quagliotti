@@ -25,9 +25,19 @@ export const parameters = {
     schema: {
       type: "integer",
       default: 10,
-        minimum: 1
+      minimum: 1
     },
     required: false,
     description: "Cantidad de pedidos a generar (máximo 10)"
+  },
+  documentTypeQueryParam: {
+    in: "query",
+    name: "documentType",
+    schema: {
+      type: "string",
+      example: "DNI"
+    },
+    required: false,
+    description: "Tipo de documento que se está cargando"
   }
 };

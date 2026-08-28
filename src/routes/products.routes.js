@@ -3,6 +3,7 @@ import express from 'express';
 import ProductController from '../controllers/products.controller.js';
 import { authenticateToken, authorizeRoles } from '../middlewares/auth.middleware.js';
 import { USER_ROLES } from '../constants/roles.js';
+import uploader from '../config/multer.config.js';
 
 const productsRoutes = express.Router();
 
@@ -21,5 +22,9 @@ productsRoutes.post('/', authenticateToken, authorizeRoles(USER_ROLES.ADMIN), Pr
 productsRoutes.patch('/:id', authenticateToken, authorizeRoles(USER_ROLES.ADMIN), ProductController.update);
 // Query para eliminar segun id
 productsRoutes.delete('/:id', authenticateToken, authorizeRoles(USER_ROLES.ADMIN), ProductController.delete);
+
+// --- RUTA PARA SUBIR IMÁGENES / THUMBNAILS DE PRODUCTOS ---
+// Permitida solo para administradores, usa multer para procesar un único archivo bajo el campo 'thumbnail' (o 'image')
+productsRoutes.post('/:id/image', authenticateToken, authorizeRoles(USER_ROLES.ADMIN), uploader.single('thumbnail'), ProductController.addThumbnail);
 
 export default productsRoutes;

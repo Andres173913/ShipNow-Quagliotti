@@ -5,6 +5,10 @@ import MockService from '../../src/mocks/services/mock.service.js';
 
 describe('Product Model Validation Tests', () => {
 
+  beforeEach(async () => {
+    await ProductModel.deleteMany({});
+  });
+
   describe('Esquema y Campos Requeridos', () => {
     it('debería fallar si se intenta crear un producto sin los campos obligatorios', async () => {
       const productWithoutRequiredField = new ProductModel({});
@@ -102,6 +106,24 @@ describe('Product Model Validation Tests', () => {
 
       expect(err).to.exist;
       expect(err.code).to.equal(11000);
+    });
+
+    it('debería permitir guardar objetos de documentos estructurados en el array thumbnails', async () => {
+      const [mockProduct] = MockService.generateMockProducts(1);
+      mockProduct.thumbnails = [{
+        originalName: 'prod.jpg',
+        generatedName: 'gen-prod.jpg',
+        path: '/uploads/gen-prod.jpg',
+        mimetype: 'image/jpeg',
+        size: 3072,
+        documentType: 'image'
+      }];
+
+      const savedProduct = await ProductModel.create(mockProduct);
+
+      expect(savedProduct.thumbnails).to.be.an('array');
+      expect(savedProduct.thumbnails.length).to.equal(1);
+      expect(savedProduct.thumbnails[0].originalName).to.equal('prod.jpg');
     });
   });
 

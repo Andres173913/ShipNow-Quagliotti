@@ -6,6 +6,10 @@ import MockService from '../../src/mocks/services/mock.service.js';
 
 describe('User Model Validation Tests', () => {
 
+  beforeEach(async () => {
+    await UserModel.deleteMany({});
+  });
+
   describe('Esquema y Campos Requeridos', () => {
     it('debería fallar si se intenta crear un usuario sin campos obligatorios', async () => {
       const userWithoutRequiredField = new UserModel({});
@@ -68,6 +72,25 @@ describe('User Model Validation Tests', () => {
 
       expect(foundUser).to.not.be.null;
       expect(foundUser.password).to.be.undefined;
+    });
+
+    it('debería permitir agregar y validar metadatos de documentos en el esquema', async () => {
+      const [mockUser] = MockService.generateMockUsers(1);
+      mockUser.documents = [{
+        originalName: 'dni.pdf',
+        generatedName: 'gen-dni.pdf',
+        path: '/uploads/gen-dni.pdf',
+        mimetype: 'application/pdf',
+        size: 1024,
+        documentType: 'dni'
+      }];
+
+      const savedUser = await UserModel.create(mockUser);
+
+      expect(savedUser.documents).to.be.an('array');
+      expect(savedUser.documents.length).to.equal(1);
+      expect(savedUser.documents[0].originalName).to.equal('dni.pdf');
+      expect(savedUser.documents[0].documentType).to.equal('dni');
     });
   });
 
