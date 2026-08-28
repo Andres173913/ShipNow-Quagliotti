@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import request from 'supertest';
+import mongoose from 'mongoose';
 import app from '../../src/app.js';
 import {CartModel} from '../../src/models/cart.model.js';
 import UserModel from '../../src/models/user.model.js';
@@ -57,6 +58,35 @@ describe('Cart Routes Integration Tests', () => {
         });
 
       expect(response.status).to.be.oneOf([200, 201]);
+    });
+
+    it('debería retornar 400 y estructura de error si se intenta agregar un producto con datos inválidos o faltantes', async () => {
+      const response = await request(app)
+        .post(`${BASE_URL}/products`)
+        .set('Cookie', [`access_token=${regularToken}`])
+        .send({
+          // Falta productId o quantity inválida
+          quantity: -1
+        });
+
+      expect(response.status).to.equal(400);
+      expect(response.body).to.have.property('status', 'error');
+      expect(response.body).to.have.property('message');
+    });
+
+    it('debería retornar 404 si se intenta agregar un producto con un ID inexistente', async () => {
+      const nonExistentId = new mongoose.Types.ObjectId();
+      const response = await request(app)
+        .post(`${BASE_URL}/products`)
+        .set('Cookie', [`access_token=${regularToken}`])
+        .send({
+          productId: nonExistentId,
+          quantity: 1
+        });
+
+      expect(response.status).to.equal(404);
+      expect(response.body).to.have.property('status', 'error');
+      expect(response.body).to.have.property('message');
     });
   });
 

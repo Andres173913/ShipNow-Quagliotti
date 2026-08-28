@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import request from 'supertest';
+import mongoose from 'mongoose';
 import app from '../../src/app.js';
 import ProductModel from '../../src/models/product.model.js';
 import UserModel from '../../src/models/user.model.js';
@@ -16,7 +17,7 @@ describe('Products Routes Integration Tests', () => {
   let mockProductData;
 
   beforeEach(async () => {
-    //  Limpiar colecciones
+    // Limpiar colecciones
     await ProductModel.deleteMany({});
     await UserModel.deleteMany({});
 
@@ -67,6 +68,15 @@ describe('Products Routes Integration Tests', () => {
       expect(product).to.have.property('_id');
       expect(product.title).to.equal(testProduct.title);
     });
+
+    it('debería retornar 404 y estructura de error al consultar un producto con ID sintácticamente válido pero inexistente', async () => {
+      const nonExistentId = new mongoose.Types.ObjectId();
+      const response = await request(app).get(`/api/products/${nonExistentId}`);
+
+      expect(response.status).to.equal(404);
+      expect(response.body).to.have.property('status', 'error');
+      expect(response.body).to.have.property('message');
+    });
   });
 
   describe('POST /api/products', () => {
@@ -90,6 +100,21 @@ describe('Products Routes Integration Tests', () => {
 
       expect(response.status).to.be.oneOf([401, 403]);
     });
+
+    it('debería retornar 400 y estructura de error si faltan campos obligatorios al crear un producto', async () => {
+      const invalidProduct = {
+        title: 'Solo Título Sin Precio Ni Stock'
+      };
+
+      const response = await request(app)
+        .post('/api/products')
+        .set('Cookie', [`access_token=${adminToken}`])
+        .send(invalidProduct);
+
+      expect(response.status).to.equal(400);
+      expect(response.body).to.have.property('status', 'error');
+      expect(response.body).to.have.property('message');
+    });
   });
 
   describe('PATCH /api/products/:id', () => {
@@ -104,6 +129,18 @@ describe('Products Routes Integration Tests', () => {
       const updatedProduct = response.body.payload || response.body;
       expect(updatedProduct.title).to.equal(updatedTitle);
     });
+
+    it('debería retornar 404 al intentar actualizar un producto con un ID inexistente', async () => {
+      const nonExistentId = new mongoose.Types.ObjectId();
+      const response = await request(app)
+        .patch(`/api/products/${nonExistentId}`)
+        .set('Cookie', [`access_token=${adminToken}`])
+        .send({ title: 'Cualquier cosa' });
+
+      expect(response.status).to.equal(404);
+      expect(response.body).to.have.property('status', 'error');
+      expect(response.body).to.have.property('message');
+    });
   });
 
   describe('DELETE /api/products/:id', () => {
@@ -117,6 +154,17 @@ describe('Products Routes Integration Tests', () => {
       // Verificamos que ya no exista
       const checkDeleted = await ProductModel.findById(testProduct._id);
       expect(checkDeleted).to.be.null;
+    });
+
+    it('debería retornar 404 al intentar eliminar un producto con un ID inexistente', async () => {
+      const nonExistentId = new mongoose.Types.ObjectId();
+      const response = await request(app)
+        .delete(`/api/products/${nonExistentId}`)
+        .set('Cookie', [`access_token=${adminToken}`]);
+
+      expect(response.status).to.equal(404);
+      expect(response.body).to.have.property('status', 'error');
+      expect(response.body).to.have.property('message');
     });
   });
 

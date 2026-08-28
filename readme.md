@@ -258,21 +258,29 @@ Una vez que el servidor esté levantado localmente, podés ingresar a la siguien
 * **Modelos y Esquemas:** Muestra la estructura exacta de los objetos (Usuarios, Productos, Órdenes) con sus tipos de datos y validaciones.
 * **Pruebas en Vivo (Try it out):** Permite ejecutar peticiones HTTP (`GET`, `POST`, `PATCH`, `DELETE`) directamente contra la API, incluyendo la inyección de tokens JWT para las rutas protegidas.
 
-## 🧪 Testing y Calidad de Código
+##🧪 Testing, Calidad de Código y Base de Datos de Pruebas
+El proyecto incluye una suite robusta de tests unitarios y de integración desarrollada con Mocha, Chai y Supertest, diseñada para verificar el correcto funcionamiento de rutas, controladores, servicios, repositorios y middlewares de forma aislada y controlada.
 
-El proyecto incluye una suite completa de **tests unitarios** desarrollada con **Mocha** y **Chai**, enfocada en validar la lógica de los middlewares, controladores, manejo de errores, esquemas y configuraciones del sistema sin necesidad de levantar servicios externos pesados.
+⚙️ Requisitos y Configuración de la Base de Datos de Test
+Para que las pruebas de integración corran de forma segura sin afectar tus datos de desarrollo o producción, la aplicación utiliza un archivo de configuración de entorno dedicado (.env.test).
 
-### 🚀 ¿Cómo ejecutar los tests?
+Crear el archivo .env.test en la raíz del proyecto con la conexión a tu base de datos de pruebas (por ejemplo, una base independiente en MongoDB),(en el codigo esta el .env.test.example):
 
+Fragmento de código
+NODE_ENV=test
+MONGO_URI=mongodb://127.0.0.1:27017/shipnow_test
+JWT_SECRET=super_secret_test_key_123
+Gestión Automática del Entorno (test/setup.js):
+El archivo de configuración inicial de Mocha (test/setup.js) inyecta automáticamente el entorno de prueba, valida la existencia de la MONGO_URI, conecta con Mongoose y se encarga de limpiar (vaciar) todas las colecciones de la base de datos después de cada test (afterEach), garantizando que las pruebas sean completamente repetibles e independientes.
+
+🚀 ¿Cómo ejecutar las pruebas?
 Para correr toda la suite de pruebas configurada en el proyecto:
 
-```bash
+Bash
 npm test
-📂 Estructura de la Suite de Pruebas
-Los tests se encuentran organizados dentro de la carpeta test/, imitando la estructura de la aplicación:
+🛠️ Herramientas Clave en el Testing
+Mocha: Test runner principal encargado de ejecutar la estructura de pruebas.
 
-Middlewares: Validación de autenticación JWT (authenticateToken), control de roles (authorizeRoles), logger de peticiones y manejo global de errores (errorHandler).
+Chai: Librería de aserciones (expect) para validar respuestas, códigos de estado y tipos de datos.
 
-Controladores: Pruebas unitarias para los endpoints de Usuarios, Productos, Órdenes y Carritos mediante mockeo de servicios.
-
-Configuración y Diccionarios: Pruebas de inmutabilidad (Object.freeze) en los códigos y diccionarios de error, variables de entorno y conexión a base de datos.
+Supertest: Librería utilizada en las pruebas de integración para simular peticiones HTTP directamente sobre la instancia de Express (app), evaluando cabeceras, cookies de sesión (access_token), payloads y códigos de error (200, 201, 400, 401, 403, 404).

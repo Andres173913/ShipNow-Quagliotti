@@ -18,7 +18,15 @@ class CartRepository {
   }
 
   // Actualizar directamente (por ejemplo, para vaciarlo)
-  static async findOneAndUpdate(filter, update, options) {
+  static async findOneAndUpdate(filter, update, options={}) {
+    const safeOptions = {
+      returnDocument: 'after',
+      ... options
+    };
+    if (safeOptions.new !== undefined){
+      delete safeOptions.new;
+    }
+    
     return await CartModel.findOneAndUpdate(filter, update, options).populate('products.productId');
   }
 }

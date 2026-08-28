@@ -31,6 +31,12 @@ class ProductService {
 
   // Método para crear un producto, primero validar que no exista otro con el mismo título
   static async create(productData) {
+    // Validar campos obligatorios básicos según tu esquema
+    if (!productData || !productData.title || !productData.description || !productData.price || !productData.code || !productData.category) {
+      logger.warn(`⚠️ Intento de creación fallido: Faltan campos obligatorios para el producto.`);
+      throw new AppError(ERROR_CODES.VALIDATION_ERROR, 'Todos los campos obligatorios (title, description, price, code, category) deben estar completos.');
+    }
+    
     // Evitar títulos duplicados
     const existingProduct = await ProductRepository.findByTitle(productData.title);
     if (existingProduct) {

@@ -9,6 +9,8 @@ describe('CartRepository Integration Tests', () => {
   let testUser;
   let testProduct;
 
+  // Como los tests de repositorios necesitan datos iniciales específicos (un usuario y un producto en la BD),
+  // reemplazamos el beforeEach de limpieza por un hook que limpia y prepara los datos de prueba necesarios de forma segura.
   beforeEach(async () => {
     await CartModel.deleteMany({});
     await UserModel.deleteMany({});

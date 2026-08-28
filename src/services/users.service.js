@@ -33,6 +33,12 @@ class UserService {
 
   // Crear un usuario
   static async create(userdata) {
+    // Validar campos obligatorios básicos
+    if (!userdata || !userdata.email || !userdata.password) {
+      logger.warn(`⚠️ Intento de registro fallido: Faltan campos obligatorios.`);
+      throw new AppError(ERROR_CODES.VALIDATION_ERROR, 'El email y la contraseña son obligatorios.');
+    }
+
     // Verificar si el email ya existe
     const existingUser = await UserRepository.findByEmail(userdata.email);
     if (existingUser) {

@@ -18,7 +18,7 @@ class OrderRepository {
 
   //Actualizar una orden por su ID
   static async update(id, data) {
-    return await OrderModel.findByIdAndUpdate(id, data, { new: true });
+    return await OrderModel.findByIdAndUpdate(id, data, { returnDocument: 'after' });
   }
 }
 

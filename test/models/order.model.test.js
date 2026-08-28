@@ -6,10 +6,6 @@ import MockService from '../../src/mocks/services/mock.service.js';
 
 describe('Order Model Validation Tests', () => {
 
-  beforeEach(async () => {
-    await OrderModel.deleteMany({});
-  });
-
   describe('Esquema y Campos Requeridos', () => {
     it('debería fallar si se intenta crear una orden sin los campos obligatorios', async () => {
       const orderWithoutRequiredField = new OrderModel({});

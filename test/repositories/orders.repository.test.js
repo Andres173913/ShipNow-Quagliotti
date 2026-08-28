@@ -44,7 +44,6 @@ describe('OrderRepository Integration Tests', () => {
 
   describe('findAvailableForCouriers()', () => {
     it('debería retornar únicamente las órdenes con estado READY y sin courier asignado', async () => {
-      // Orden disponible (READY y courierId null)
       await OrderModel.create({
         userId: testUser._id,
         products: [{ productId: testProduct._id, quantity: 1 }],
@@ -53,7 +52,6 @@ describe('OrderRepository Integration Tests', () => {
         courierId: null
       });
 
-      // Orden no disponible (estado diferente)
       await OrderModel.create({
         userId: testUser._id,
         products: [{ productId: testProduct._id, quantity: 1 }],
@@ -62,7 +60,6 @@ describe('OrderRepository Integration Tests', () => {
         courierId: null
       });
 
-      // Orden no disponible (ya tiene courier)
       await OrderModel.create({
         userId: testUser._id,
         products: [{ productId: testProduct._id, quantity: 1 }],

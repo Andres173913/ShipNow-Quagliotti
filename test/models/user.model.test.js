@@ -6,10 +6,6 @@ import MockService from '../../src/mocks/services/mock.service.js';
 
 describe('User Model Validation Tests', () => {
 
-  beforeEach(async () => {
-    await UserModel.deleteMany({});
-  });
-
   describe('Esquema y Campos Requeridos', () => {
     it('debería fallar si se intenta crear un usuario sin campos obligatorios', async () => {
       const userWithoutRequiredField = new UserModel({});
@@ -31,7 +27,6 @@ describe('User Model Validation Tests', () => {
     it('debería asignar el rol por defecto (USER) si no se especifica uno', async () => {
       const [mockUser] = MockService.generateMockUsers(1);
 
-      // Creamos el usuario asegurándonos de no enviar un rol (o pisándolo si el mock lo trae)
       const user = new UserModel({
         ...mockUser,
         role: undefined 
@@ -46,13 +41,11 @@ describe('User Model Validation Tests', () => {
     it('debería fallar si se intenta registrar un email duplicado (unique)', async () => {
       const [userOne, userTwo] = MockService.generateMockUsers(2);
 
-      // Creamos el primer usuario
       await UserModel.create(userOne);
 
-      // Intentamos crear otro usando el mismo email de userOne pero los demás datos de userTwo
       const duplicateUser = new UserModel({
         ...userTwo,
-        email: userOne.email // Forzamos el email duplicado
+        email: userOne.email 
       });
 
       let err;
@@ -62,7 +55,6 @@ describe('User Model Validation Tests', () => {
         err = error;
       }
 
-      // Código de error de MongoDB para duplicados (11000)
       expect(err).to.exist;
       expect(err.code).to.equal(11000);
     });
@@ -72,7 +64,6 @@ describe('User Model Validation Tests', () => {
 
       await UserModel.create(mockUser);
 
-      // Buscamos sin usar .select('+password')
       const foundUser = await UserModel.findOne({ email: mockUser.email });
 
       expect(foundUser).to.not.be.null;

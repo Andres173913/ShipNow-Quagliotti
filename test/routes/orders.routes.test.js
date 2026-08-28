@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import request from 'supertest';
+import mongoose from 'mongoose';
 import app from '../../src/app.js';
 import OrderModel from '../../src/models/order.model.js';
 import UserModel from '../../src/models/user.model.js';
@@ -47,8 +48,8 @@ describe('Orders Routes Integration Tests', () => {
       userId: regularUser._id,
       products: [{ productId: product._id, quantity: 1 }],
       total: 1000,
-      status: 'READY', // O 'pending', según maneje tu enum
-      courierId: null    // Libre para ser aceptada
+      status: 'READY',
+      courierId: null
     });
   });
 
@@ -80,6 +81,17 @@ describe('Orders Routes Integration Tests', () => {
 
       expect(response.status).to.equal(200);
     });
+
+    it('debería retornar 404 y estructura de error al intentar aceptar un pedido con un ID inexistente', async () => {
+      const nonExistentId = new mongoose.Types.ObjectId();
+      const response = await request(app)
+        .patch(`/api/orders/${nonExistentId}/accept`)
+        .set('Cookie', [`access_token=${courierToken}`]);
+
+      expect(response.status).to.equal(404);
+      expect(response.body).to.have.property('status', 'error');
+      expect(response.body).to.have.property('message');
+    });
   });
 
   describe('PATCH /api/orders/:id/deliver', () => {
@@ -95,6 +107,17 @@ describe('Orders Routes Integration Tests', () => {
         .set('Cookie', [`access_token=${courierToken}`]);
 
       expect(response.status).to.equal(200);
+    });
+
+    it('debería retornar 404 y estructura de error al intentar entregar un pedido con un ID inexistente', async () => {
+      const nonExistentId = new mongoose.Types.ObjectId();
+      const response = await request(app)
+        .patch(`/api/orders/${nonExistentId}/deliver`)
+        .set('Cookie', [`access_token=${courierToken}`]);
+
+      expect(response.status).to.equal(404);
+      expect(response.body).to.have.property('status', 'error');
+      expect(response.body).to.have.property('message');
     });
   });
 

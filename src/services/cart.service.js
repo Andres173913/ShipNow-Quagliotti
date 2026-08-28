@@ -16,11 +16,16 @@ class CartService {
   }
 
   static async addProductToCart(userId, productId, quantity = 1) {
-    // Usamos ProductRepository en lugar de ProductModel directamente
+    // Validar que se reciba un productId y una cantidad válida
+    if (!productId || !quantity || quantity <= 0) {
+      logger.warn(`⚠️ Intento de agregar producto fallido: Datos de entrada inválidos.`);
+      throw new AppError(ERROR_CODES.VALIDATION_ERROR, 'El ID del producto y una cantidad válida (mayor a 0) son obligatorios.');
+    }
+
     const product = await ProductRepository.findById(productId);
     if (!product) {
       logger.warn(`⚠️ Intento de agregar producto fallido: Producto con ID ${productId} no encontrado.`);
-      throw new AppError(ERROR_CODES.NOT_FOUND, 'El producto no existe.');
+      throw new AppError(ERROR_CODES.PRODUCT_NOT_FOUND, 'El producto no existe.');
     }
 
     if (product.stock < quantity) {
@@ -59,12 +64,12 @@ class CartService {
     const cart = await CartRepository.findOneAndUpdate(
       { userId },
       { products: [] },
-      { new: true }
+      { returnDocument: 'after' }
     );
     
     if (!cart) {
       logger.warn(`⚠️ Intento de vaciar carrito fallido: Carrito para el usuario ${userId} no encontrado.`);
-      throw new AppError(ERROR_CODES.NOT_FOUND, 'Carrito no encontrado.');
+      throw new AppError(ERROR_CODES.ORDER_NOT_FOUND, 'Carrito no encontrado.');
     }
 
     logger.info(`Carrito vaciado para el usuario ${userId}`);

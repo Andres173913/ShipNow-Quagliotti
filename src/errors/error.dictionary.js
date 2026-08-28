@@ -9,6 +9,10 @@ export const errorsDictionary = Object.freeze({
         statusCode: 404,
         message: 'Usuario no encontrado'
     },
+    [ERROR_CODES.PRODUCT_NOT_FOUND]:{
+        statusCode:404,
+        message: 'Producto no encontrado'
+    },
     [ERROR_CODES.ORDER_NOT_FOUND]: {
         statusCode: 404,
         message: 'No se encontro el pedido solicitado'

@@ -4,10 +4,6 @@ import { CartModel } from '../../src/models/cart.model.js';
 
 describe('Cart Model Validation Tests', () => {
 
-  beforeEach(async () => {
-    await CartModel.deleteMany({});
-  });
-
   describe('Esquema y Campos Requeridos', () => {
     it('debería fallar si se intenta crear un carrito sin userId', async () => {
       const cartWithoutUser = new CartModel({
@@ -62,19 +58,17 @@ describe('Cart Model Validation Tests', () => {
         products: []
       };
 
-      // Creamos el primer carrito
       await CartModel.create(cartOne);
 
       let err;
       try {
-        // Intentamos crear otro carrito con el mismo userId
         await CartModel.create(cartTwo);
       } catch (error) {
         err = error;
       }
 
       expect(err).to.exist;
-      expect(err.code).to.equal(11000); // Código de error de MongoDB para índice único duplicado
+      expect(err.code).to.equal(11000);
     });
 
     it('debería fallar si la cantidad de un producto en el carrito es menor a 1 (min: 1)', async () => {
@@ -83,7 +77,7 @@ describe('Cart Model Validation Tests', () => {
         products: [
           {
             productId: new mongoose.Types.ObjectId(),
-            quantity: 0 // Menor al mínimo permitido
+            quantity: 0
           }
         ]
       };
@@ -105,9 +99,7 @@ describe('Cart Model Validation Tests', () => {
       const invalidCartData = {
         userId: new mongoose.Types.ObjectId(),
         products: [
-          {
-            // Faltan ambos campos obligatorios del subdocumento
-          }
+          {}
         ]
       };
 

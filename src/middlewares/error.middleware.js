@@ -49,10 +49,17 @@ const mapToCustomError = (error) => {
         return new AppError(ERROR_CODES.INVALID_ID, `El formato del ID (${error.value}) es inválido.`);
     }
     if (error.code === 11000) {
-        return new AppError(ERROR_CODES.DUPLICATE_KEY, "El recurso ya existe en la base de datos.");
+        // Extrae inteligentemente qué campo duplicó el registro (ej: email, code, title)
+        const duplicateField = Object.keys(error.keyValue || {})[0] || 'recurso';
+        return new AppError(ERROR_CODES.DUPLICATE_KEY, `Ya existe un registro con ese valor para el campo '${duplicateField}'.`);
     }
-    if (error.name === "ValidationError") {
-        return new AppError(ERROR_CODES.VALIDATION_ERROR, error.message, error.details);
+
+   if (error.name === "ValidationError") {
+        return new AppError(
+            ERROR_CODES.VALIDATION_ERROR, 
+            "Hay campos obligatorios que están faltando o son inválidos.", 
+            error.errors
+        );
     }
 
     // Si el error ya viene con un status code propio (ej. tirado desde un servicio con un 400 o 404 custom)

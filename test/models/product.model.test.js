@@ -1,13 +1,9 @@
 import { expect } from 'chai';
 import mongoose from 'mongoose';
 import ProductModel from '../../src/models/product.model.js';
-import MockService from '../../src/mocks/services/mock.service.js'; // Ajustá la ruta según tu estructura
+import MockService from '../../src/mocks/services/mock.service.js';
 
 describe('Product Model Validation Tests', () => {
-
-  beforeEach(async () => {
-    await ProductModel.deleteMany({});
-  });
 
   describe('Esquema y Campos Requeridos', () => {
     it('debería fallar si se intenta crear un producto sin los campos obligatorios', async () => {
@@ -69,13 +65,11 @@ describe('Product Model Validation Tests', () => {
     it('debería fallar si se intenta registrar un producto con un código duplicado (unique)', async () => {
       const [productOne, productTwo] = MockService.generateMockProducts(2);
 
-      // Creamos el primer producto
       await ProductModel.create(productOne);
 
-      // Intentamos crear otro usando el mismo código de productOne pero el resto de productTwo
       const duplicateProduct = new ProductModel({
         ...productTwo,
-        code: productOne.code // Forzamos el código duplicado
+        code: productOne.code
       });
 
       let err;
@@ -94,7 +88,6 @@ describe('Product Model Validation Tests', () => {
 
       await ProductModel.create(productOne);
 
-      // Forzamos el título duplicado con otro código distinto para aislar la prueba
       const duplicateProduct = new ProductModel({
         ...productTwo,
         title: productOne.title
