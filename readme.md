@@ -164,7 +164,7 @@ Permite explorar esquemas, modelos de Mongoose y probar peticiones HTTP en vivo.
 ## 🐳 Contenerización con Docker
 
 ### Archivos de Contenerización:
-- **`Dockerfile`:** Basado en `node:22-alpine`, instala dependencias con `npm install --omit=dev`, expone el puerto `3000` y ejecuta `node start`.
+- **`Dockerfile`:** Basado en `node:22-alpine`, instala dependencias con `npm install --omit=dev`, expone el puerto `3000` y ejecuta `npm run start`.
 - **`.dockerignore`:** Excluye `node_modules`, `.env`, `.git`, `logs/`, `uploads/`, `coverage/`, `scratch/` y `test/`.
 
 ### 1. Construir la imagen Docker:
