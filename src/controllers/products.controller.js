@@ -2,11 +2,22 @@ import ProductService from '../services/products.service.js';
 
 class ProductController {
 
-    // Método para obtener todos los productos
+    // Método para obtener productos con paginación y filtros
     static async getAll(req, res, next) {
         try {
-            const products = await ProductService.getAll();
-            res.status(200).json({ status: "success", payload: products });
+            const { page, limit, category, search, minPrice, maxPrice, sort } = req.query || {};
+            const products = await ProductService.getAll({ page, limit, category, search, minPrice, maxPrice, sort });
+
+            res.status(200).json({
+                status: "success",
+                payload: products,
+                page: products.page,
+                limit: products.limit,
+                totalDocs: products.totalDocs,
+                totalPages: products.totalPages,
+                hasNextPage: products.hasNextPage,
+                hasPrevPage: products.hasPrevPage
+            });
         } catch (error) {
             next(error);
         }

@@ -8,8 +8,11 @@
     "url": "git+https://github.com/Andres173913/ShipNow-Quagliotti.git"
   },
   "scripts": {
+    "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "test": "mocha --file test/setup.js \"test/**/*.test.js\" --timeout 20000"
+    "test": "mocha --file test/setup.js \"test/**/*.test.js\" --timeout 20000",
+    "docker:build": "docker build -t shipnow .",
+    "docker:run": "docker run -p 3000:3000 shipnow"
   },
   "keywords": [],
   "author": "",
@@ -19,8 +22,10 @@
     "@faker-js/faker": "^10.5.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.4",
     "multer": "^2.3.0",

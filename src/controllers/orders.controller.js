@@ -2,11 +2,22 @@ import OrderService from '../services/orders.service.js';
 
 class OrderController {
 
-  // Órdenes disponibles para que los Couriers puedan aceptarlas
+  // Órdenes disponibles para que los Couriers puedan aceptarlas con paginación
   static async getAvailable(req, res, next) {
     try {
-      const orders = await OrderService.getAvailableOrdersForCourier();
-      res.status(200).json({ status: "success", payload: orders });
+      const { page, limit } = req.query || {};
+      const orders = await OrderService.getAvailableOrdersForCourier({ page, limit });
+
+      res.status(200).json({
+        status: "success",
+        payload: orders,
+        page: orders.page,
+        limit: orders.limit,
+        totalDocs: orders.totalDocs,
+        totalPages: orders.totalPages,
+        hasNextPage: orders.hasNextPage,
+        hasPrevPage: orders.hasPrevPage
+      });
     } catch (error) {
       next(error);
     }

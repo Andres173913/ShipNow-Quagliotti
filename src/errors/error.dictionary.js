@@ -41,6 +41,10 @@ export const errorsDictionary = Object.freeze({
         statusCode: 404,
         message: 'La ruta solicitada no existe'
     },
+    [ERROR_CODES.FORBIDDEN_ACCESS]: {
+        statusCode: 403,
+        message: 'Acceso prohibido o recurso no disponible en este entorno'
+    },
     [ERROR_CODES.INTERNAL_SERVER_ERROR]: {
         statusCode: 500,
         message: 'Error en el servidor'

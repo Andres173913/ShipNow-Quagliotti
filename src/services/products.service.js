@@ -4,9 +4,9 @@ import logger from '../config/logger.js';
 
 class ProductService {
 
-  // Método para obtener todos los productos
-  static async getAll() {
-    return await ProductRepository.find();
+  // Método para obtener productos con paginación y filtros
+  static async getAll(params = {}) {
+    return await ProductRepository.find({}, params);
   }
 
   // Método para obtener un producto por su ID

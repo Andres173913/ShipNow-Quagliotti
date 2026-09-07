@@ -3,11 +3,22 @@ import { config } from '../config/config.js';
 
 class UserController {
   
-  // Obtener todos los usuarios
+  // Obtener usuarios con paginación y filtros
   static async getAll(req, res, next) {
     try {
-      const users = await UserService.getAll();
-      res.status(200).json({ status: "success", payload: users });
+      const { page, limit, role, search } = req.query || {};
+      const users = await UserService.getAll({ page, limit, role, search });
+
+      res.status(200).json({
+        status: "success",
+        payload: users,
+        page: users.page,
+        limit: users.limit,
+        totalDocs: users.totalDocs,
+        totalPages: users.totalPages,
+        hasNextPage: users.hasNextPage,
+        hasPrevPage: users.hasPrevPage
+      });
     } catch (error) {
       next(error); // Delegamos al middleware global
     }

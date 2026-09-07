@@ -5,9 +5,9 @@ import logger from '../config/logger.js';
 
 class OrderService {
 
-  // Ver pedidos disponibles en el sistema para reparto
-  static async getAvailableOrdersForCourier() {
-    return await OrderRepository.findAvailableForCouriers();
+  // Ver pedidos disponibles en el sistema para reparto con paginación
+  static async getAvailableOrdersForCourier(params = {}) {
+    return await OrderRepository.findAvailableForCouriers(params);
   }
 
   // El Courier acepta/se asigna un pedido

@@ -6,9 +6,9 @@ import logger from '../config/logger.js';
 
 class UserService {
 
-  // Traer todos los usuarios
-  static async getAll() {
-    return await UserRepository.find();
+  // Traer usuarios con paginación y filtros
+  static async getAll(params = {}) {
+    return await UserRepository.find({}, params);
   }
 
   // Traer un usuario por id
