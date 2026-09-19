@@ -194,6 +194,34 @@ npm test
 
 ---
 
+## 🐳 Ejecución con Docker (Docker Compose)
+Si preferís levantar todo el entorno de forma automática (API + MongoDB) sin dependencias locales, podés usar Docker Compose:
+
+### Requisitos
+- Docker instalado.
+
+- Docker Compose instalado.
+
+### Pasos:
+Asegurarte de tener tu archivo .env configurado.
+
+- Ejecutar el siguiente comando para construir la imagen y levantar los servicios:
+
+```Bash
+docker compose up --build
+```
+Esto pondrá en marcha:
+
+La base de datos MongoDB con healthcheck activo.
+
+La API de ShipNow conectada y escuchando en el puerto 3000.
+
+Para detener los contenedores, presioná Ctrl + C o ejecutá en otra terminal:
+
+```Bash
+docker compose down
+```
+
 ## ⚠️ Archivos que NO deben subirse al Repositorio Git
 
 Asegurados mediante `.gitignore` y `.dockerignore`:

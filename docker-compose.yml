@@ -1,0 +1,41 @@
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: shipnow_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  api:
+    build: .
+    container_name: shipnow_api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/shipnow
+      - SALT_ROUNDS=10
+      - JWT_SECRET=your_jwt_secret_key
+      - JWT_EXPIRES_IN=4h
+      - LOG_LEVEL=debug
+      - ENABLE_INTERNAL_ENDPOINTS=false
+      - CLIENT_URL=http://localhost:3000
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./uploads:/app/uploads
+
+volumes:
+  mongo_data:
