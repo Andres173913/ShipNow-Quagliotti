@@ -11,7 +11,7 @@ COPY package*.json ./
 RUN npm install --omit=dev
 
 # Copiar el resto del código de la aplicación
-COPY . .
+COPY src/ ./src
 
 # Exponer el puerto predeterminado de la aplicación
 EXPOSE 3000
